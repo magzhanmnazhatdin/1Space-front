@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
+import 'club_detail_page.dart';
 
 class ClubsPage extends StatefulWidget {
   @override
@@ -71,13 +72,20 @@ class _ClubsPageState extends State<ClubsPage> {
         itemCount: _clubs.length,
         itemBuilder: (context, index) {
           final club = _clubs[index];
-          return ListTile(
-            title: Text(club.name),
-            subtitle: Text('${club.address} - ${club.pricePerHour} руб/час'),
-            trailing: Text('Доступно ПК: ${club.availablePCs}'),
-            onTap: () {
-              // Можно добавить навигацию на детальную страницу
-            },
+          return Card(
+            child: ListTile(
+              title: Text(club.name),
+              subtitle: Text('${club.address} - ${club.pricePerHour} руб/час'),
+              trailing: Text('Доступно ПК: ${club.availablePCs}'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ClubDetailPage(clubId: club.id),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),

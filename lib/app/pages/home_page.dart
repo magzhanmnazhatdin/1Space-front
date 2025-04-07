@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'clubs_page.dart';
 import 'login_page.dart';
+import 'my_bookings_page.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -35,6 +36,14 @@ class HomePage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ClubsPage()),
               ),
               child: Text('Просмотреть клубы'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyBookingsPage()),
+              ),
+              child: Text('Мои бронирования'),
             ),
           ],
         ),
