@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'auth_service.dart';
+import '../services/auth_service.dart';
 import 'register_page.dart';
 import 'reset_password_page.dart';
 import 'home_page.dart';

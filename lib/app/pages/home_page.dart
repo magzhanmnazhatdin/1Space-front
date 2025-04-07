@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'auth_service.dart';
+import '../services/auth_service.dart';
+import 'clubs_page.dart';
 import 'login_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -27,6 +28,14 @@ class HomePage extends StatelessWidget {
             Text('Добро пожаловать!'),
             if (user?.email != null) Text('Email: ${user!.email}'),
             if (user?.displayName != null) Text('Имя: ${user!.displayName}'),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ClubsPage()),
+              ),
+              child: Text('Просмотреть клубы'),
+            ),
           ],
         ),
       ),
