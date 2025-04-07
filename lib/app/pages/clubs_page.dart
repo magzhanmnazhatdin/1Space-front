@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/booking_model.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import 'club_detail_page.dart';

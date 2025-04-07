@@ -1,5 +1,7 @@
 // booking_page.dart
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../models/booking_model.dart';
@@ -74,9 +76,16 @@ class _BookingPageState extends State<BookingPage> {
 
     setState(() => _isBooking = true);
     try {
-      final auth = context.read<AuthService>();
-      final token = await auth.getServerToken();
-      if (token == null) return;
+      // Получаем AuthService через Provider
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final token = await authService.getServerToken();
+
+      if (token == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ошибка аутентификации')),
+        );
+        return;
+      }
 
       await ApiService.createBooking(
         clubId: widget.clubId,
@@ -89,7 +98,7 @@ class _BookingPageState extends State<BookingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Бронирование успешно создано')),
       );
-      Navigator.pop(context, true); // Возвращаем успешный результат
+      Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка бронирования: $e')),

@@ -1,5 +1,6 @@
 // club_detail_page.dart
 import 'package:flutter/material.dart';
+import '../models/booking_model.dart';
 import '../services/api_service.dart';
 import 'booking_page.dart';
 
@@ -42,7 +43,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(club.name, style: Theme.of(context).textTheme.headline5),
+                Text(club.name, style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 10),
                 Text('Адрес: ${club.address}'),
                 Text('Цена за час: ${club.pricePerHour} руб.'),

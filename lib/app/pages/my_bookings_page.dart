@@ -2,8 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'api_service.dart';
-import 'auth_service.dart';
+import '../models/booking_model.dart';
+import '../services/api_service.dart';
+import '../services/auth_service.dart';
 
 class MyBookingsPage extends StatefulWidget {
   const MyBookingsPage({Key? key}) : super(key: key);
