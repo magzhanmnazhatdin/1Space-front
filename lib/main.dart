@@ -5,9 +5,14 @@ import 'app/pages/login_page.dart';
 import 'app/services/auth_service.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting('ru_RU', null);
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -30,6 +35,15 @@ class MyApp extends StatelessWidget {
       valueListenable: authService,
       builder: (context, auth, _) {
         return MaterialApp(
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            const Locale('ru', 'RU'), // Русский
+            const Locale('en', 'US'), // Английский
+          ],
           title: 'Firebase Auth Demo',
           theme: ThemeData(
             primarySwatch: Colors.blue,
