@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../components/bottom_bar.dart';
 import '../services/auth_service.dart';
 import 'clubs_page.dart';
-import 'login_page.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Главная'),
+        title: Text('Home'),
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -25,20 +25,29 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Добро пожаловать!'),
+            Text(
+              'Welcome!',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             if (user?.email != null) Text('Email: ${user!.email}'),
-            if (user?.displayName != null) Text('Имя: ${user!.displayName}'),
+            if (user?.displayName != null) Text('Name: ${user!.displayName}'),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ClubsPage()),
               ),
-              child: Text('Просмотреть клубы'),
+              child: Text('View Clubs'),
             ),
           ],
         ),
       ),
+      bottomNavigationBar: CustomGNavBar(),  // Use the custom navigation bar
     );
   }
 }

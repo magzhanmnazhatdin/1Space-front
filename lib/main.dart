@@ -22,8 +22,23 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Firebase Auth Demo',
           theme: ThemeData(
+            textTheme: TextTheme(
+              bodyMedium: TextStyle(color: Colors.white),
+            ),
+            scaffoldBackgroundColor: Color(0xFF141414),
             primarySwatch: Colors.blue,
             visualDensity: VisualDensity.adaptivePlatformDensity,
+            appBarTheme: AppBarTheme(
+              backgroundColor: Color(0xFF141414),
+              centerTitle: true,
+              titleTextStyle: TextStyle(
+                color: Color(0xFFE2F163),
+                fontFamily: 'Poppins',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              iconTheme: IconThemeData(color: Color(0xFFE2F163)),
+            )
           ),
           home: auth.currentUser != null ? HomePage() : LoginPage(),
           routes: {

@@ -37,6 +37,7 @@ dependencies:
   firebase_storage: ^12.4.5
   firebase_core: ^3.13.0
   firebase_auth: ^5.5.2
+  google_nav_bar: ^5.0.7
 
 dev_dependencies:
   flutter_test:
@@ -61,8 +62,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - lib/images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -76,7 +77,47 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: lib/fonts/Poppins/Poppins-Thin.ttf
+          weight: 100
+        - asset: lib/fonts/Poppins/Poppins-ExtraLight.ttf
+          weight: 200
+        - asset: lib/fonts/Poppins/Poppins-Light.ttf
+          weight: 300
+        - asset: lib/fonts/Poppins/Poppins-Regular.ttf
+          weight: 400
+        - asset: lib/fonts/Poppins/Poppins-Medium.ttf
+          weight: 500
+        - asset: lib/fonts/Poppins/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: lib/fonts/Poppins/Poppins-Bold.ttf
+          weight: 700
+        - asset: lib/fonts/Poppins/Poppins-ExtraBold.ttf
+          weight: 800
+        - asset: lib/fonts/Poppins/Poppins-Black.ttf
+          weight: 900
+    - family: LeagueSpartan
+      fonts:
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-Thin.ttf
+          weight: 100
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-ExtraLight.ttf
+          weight: 200
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-Light.ttf
+          weight: 300
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-Regular.ttf
+          weight: 400
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-Medium.ttf
+          weight: 500
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-SemiBold.ttf
+          weight: 600
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-Bold.ttf
+          weight: 700
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-ExtraBold.ttf
+          weight: 800
+        - asset: lib/fonts/League_Spartan/LeagueSpartan-Black.ttf
+          weight: 900
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
