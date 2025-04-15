@@ -1,11 +1,19 @@
 // profile_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:onespace/app/pages/my_bookings_page.dart';
 import '../components/my_button.dart';
 import 'detailed_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  void MyBookingsPageOpen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MyBookingsPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +122,10 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ),
+
+          const SizedBox(height: 20),
+
+          MyButton(onTap: () => MyBookingsPageOpen(context), text: 'My Bookings', icon: Icons.edit_calendar)
         ],
       ),
     );

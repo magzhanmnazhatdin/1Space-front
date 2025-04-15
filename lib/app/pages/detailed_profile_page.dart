@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/auth_service.dart'; // Исправлен импорт
+import '../services/auth_service.dart';
 
 class DetailedProfilePage extends StatelessWidget {
   const DetailedProfilePage({super.key});
@@ -22,8 +22,8 @@ class DetailedProfilePage extends StatelessWidget {
             onPressed: () async {
               final authService = context.read<AuthService>();
               await authService.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
+              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+            }
           ),
         ],
       ),
@@ -79,7 +79,9 @@ class DetailedProfilePage extends StatelessWidget {
               Navigator.pushNamed(context, '/help');
             },
           ),
+
           const Divider(),
+
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.white),
             title: const Text(
@@ -89,8 +91,8 @@ class DetailedProfilePage extends StatelessWidget {
             onTap: () async {
               final authService = context.read<AuthService>();
               await authService.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
+              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+            }
           ),
         ],
       ),
@@ -99,7 +101,6 @@ class DetailedProfilePage extends StatelessWidget {
   }
 }
 
-// Заглушки для страниц, которых нет
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
 

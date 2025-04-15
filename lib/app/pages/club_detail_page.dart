@@ -37,7 +37,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
         final token = await authService.getServerToken();
         if (token == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ошибка аутентификации')),
+            const SnackBar(content: Text('Ошибка аутентификации', style: TextStyle(color: Colors.white))),
           );
           return;
         }
@@ -47,11 +47,11 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
           _clubFuture = ApiService.getClub(widget.clubId);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Клуб успешно обновлен')),
+          const SnackBar(content: Text('Клуб успешно обновлен', style: TextStyle(color: Colors.white))),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка обновления клуба: $e')),
+          SnackBar(content: Text('Ошибка обновления клуба: $e', style: const TextStyle(color: Colors.white))),
         );
       }
     }
@@ -61,7 +61,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Информация о клубе'),
+        title: const Text('Информация о клубе', style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -80,7 +80,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Ошибка: ${snapshot.error}'));
+            return Center(child: Text('Ошибка: ${snapshot.error}', style: const TextStyle(color: Colors.white)));
           }
 
           final club = snapshot.data!;
@@ -89,14 +89,18 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(club.name, style: Theme.of(context).textTheme.headlineMedium),
+                Text(club.name, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
                 const SizedBox(height: 10),
-                Text('Адрес: ${club.address}'),
-                Text('Цена за час: ${club.pricePerHour} руб.'),
-                Text('Доступно компьютеров: ${club.availablePCs}'),
+                Text('Адрес: ${club.address}', style: const TextStyle(color: Colors.white)),
+                Text('Цена за час: ${club.pricePerHour} руб.', style: const TextStyle(color: Colors.white)),
+                Text('Доступно компьютеров: ${club.availablePCs}', style: const TextStyle(color: Colors.white)),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFE2F163),
+                      foregroundColor: Colors.black,
+                    ),
                     onPressed: () async {
                       final result = await Navigator.push<bool>(
                         context,
@@ -160,44 +164,17 @@ class _EditClubDialogState extends State<EditClubDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Редактировать клуб'),
+      backgroundColor: Colors.grey[900],
+      title: const Text('Редактировать клуб', style: TextStyle(color: Colors.white)),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Название'),
-                validator: (value) => value?.isEmpty ?? true ? 'Введите название' : null,
-              ),
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(labelText: 'Адрес'),
-                validator: (value) => value?.isEmpty ?? true ? 'Введите адрес' : null,
-              ),
-              TextFormField(
-                controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Цена за час (руб)'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Введите цену';
-                  final price = double.tryParse(value!);
-                  if (price == null || price <= 0) return 'Цена должна быть больше 0';
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _pcsController,
-                decoration: const InputDecoration(labelText: 'Доступно ПК'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) return 'Введите количество ПК';
-                  final pcs = int.tryParse(value!);
-                  if (pcs == null || pcs < 0) return 'Количество ПК не может быть отрицательным';
-                  return null;
-                },
-              ),
+              _buildField(_nameController, 'Название'),
+              _buildField(_addressController, 'Адрес'),
+              _buildField(_priceController, 'Цена за час (руб)', isNumber: true),
+              _buildField(_pcsController, 'Доступно ПК', isNumber: true),
             ],
           ),
         ),
@@ -205,7 +182,7 @@ class _EditClubDialogState extends State<EditClubDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Отмена'),
+          child: const Text('Отмена', style: TextStyle(color: Colors.grey)),
         ),
         ElevatedButton(
           onPressed: () {
@@ -220,9 +197,36 @@ class _EditClubDialogState extends State<EditClubDialog> {
               Navigator.pop(context, updatedClub);
             }
           },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFE2F163),
+            foregroundColor: Colors.black,
+          ),
           child: const Text('Сохранить'),
         ),
       ],
+    );
+  }
+
+  Widget _buildField(TextEditingController controller, String labelText, {bool isNumber = false}) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+      ),
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      style: const TextStyle(color: Colors.white),
+      validator: (value) {
+        if (value?.isEmpty ?? true) return 'Заполните поле';
+        if (isNumber) {
+          final parsed = isNumber ? double.tryParse(value!) ?? int.tryParse(value!) : null;
+          if (parsed == null || (parsed is num && parsed < 0)) return 'Введите корректное число';
+        }
+        return null;
+      },
     );
   }
 }
