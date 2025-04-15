@@ -1,4 +1,5 @@
 // booking_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +36,7 @@ class _BookingPageState extends State<BookingPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 30)),
+      locale: const Locale('ru', 'RU'),
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);
@@ -76,8 +78,7 @@ class _BookingPageState extends State<BookingPage> {
 
     setState(() => _isBooking = true);
     try {
-      // Получаем AuthService через Provider
-      final authService = Provider.of<AuthService>(context, listen: false);
+      final authService = context.read<AuthService>();
       final token = await authService.getServerToken();
 
       if (token == null) {
@@ -125,10 +126,9 @@ class _BookingPageState extends State<BookingPage> {
               return Center(child: Text('Ошибка: ${snapshot.error}'));
             }
 
-            final computers = snapshot.data!;
+            final computers = snapshot.data ?? [];
             return ListView(
               children: [
-                // Выбор даты и времени
                 ListTile(
                   title: Text(_selectedDate == null
                       ? 'Выберите дату'
@@ -143,8 +143,6 @@ class _BookingPageState extends State<BookingPage> {
                   trailing: const Icon(Icons.access_time),
                   onTap: () => _selectTime(context),
                 ),
-
-                // Выбор количества часов
                 Row(
                   children: [
                     const Text('Количество часов:'),
@@ -165,11 +163,8 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
                 const Text('Доступные компьютеры:', style: TextStyle(fontSize: 16)),
-
-                // Список компьютеров
                 ...computers.map((computer) => Card(
                   child: ListTile(
                     title: Text('Компьютер №${computer.pcNumber}'),
@@ -183,7 +178,6 @@ class _BookingPageState extends State<BookingPage> {
                         : null,
                   ),
                 )),
-
                 const SizedBox(height: 20),
                 _isBooking
                     ? const Center(child: CircularProgressIndicator())

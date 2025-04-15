@@ -1,10 +1,15 @@
+// clubs_page.dart
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/booking_model.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import 'club_detail_page.dart';
 
 class ClubsPage extends StatefulWidget {
+  const ClubsPage({Key? key}) : super(key: key);
+
   @override
   _ClubsPageState createState() => _ClubsPageState();
 }
@@ -34,11 +39,17 @@ class _ClubsPageState extends State<ClubsPage> {
   }
 
   Future<void> _addClub() async {
-    final token = await authService.value.getServerToken();
-    if (token == null) return;
+    final authService = context.read<AuthService>();
+    final token = await authService.getServerToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ошибка аутентификации')),
+      );
+      return;
+    }
 
     final club = ComputerClub(
-      id: 'new-id-${DateTime.now().millisecondsSinceEpoch}',
+      id: 'club-${DateTime.now().millisecondsSinceEpoch}',
       name: 'Новый клуб',
       address: 'Новый адрес',
       pricePerHour: 100,
@@ -48,6 +59,9 @@ class _ClubsPageState extends State<ClubsPage> {
     try {
       await ApiService.createClub(club, token);
       await _loadClubs();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Клуб успешно создан')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка создания клуба: $e')),
@@ -59,16 +73,16 @@ class _ClubsPageState extends State<ClubsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Компьютерные клубы'),
+        title: const Text('Компьютерные клубы'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: _addClub,
           ),
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
         itemCount: _clubs.length,
         itemBuilder: (context, index) {
@@ -78,7 +92,12 @@ class _ClubsPageState extends State<ClubsPage> {
             subtitle: Text('${club.address} - ${club.pricePerHour} руб/час'),
             trailing: Text('Доступно ПК: ${club.availablePCs}'),
             onTap: () {
-              // Можно добавить навигацию на детальную страницу
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ClubDetailPage(clubId: club.id),
+                ),
+              );
             },
           );
         },

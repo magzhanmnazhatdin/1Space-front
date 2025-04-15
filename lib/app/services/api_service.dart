@@ -1,20 +1,8 @@
+// services/api_service.dart
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'auth_service.dart';
 import '../models/booking_model.dart';
-
-const String CLUBID = "ClubID";
-
-const String CREATEDAT = "CreateAt";
-const String ENDTIME = "EndTime";
-const String STARTTIME = "StartTime";
-
-const String ID = "ID";
-const String PCNUMBER = "pc_number";
-const String STATUS = "Status";
-const String TOTALPRICE = "TotalPrice";
-const String USERID = "UserID";
-
 
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:8080';
@@ -27,7 +15,7 @@ class ApiService {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => ComputerClub.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load clubs');
+      throw Exception('Failed to load clubs: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -38,12 +26,12 @@ class ApiService {
     if (response.statusCode == 200) {
       return ComputerClub.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to load club');
+      throw Exception('Failed to load club: ${response.statusCode} - ${response.body}');
     }
   }
 
   // Создание клуба
-  static Future<String> createClub(ComputerClub club, String token) async {
+  static Future<void> createClub(ComputerClub club, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/clubs'),
       headers: {
@@ -53,10 +41,8 @@ class ApiService {
       body: json.encode(club.toJson()),
     );
 
-    if (response.statusCode == 201) {
-      return json.decode(response.body)['id'];
-    } else {
-      throw Exception('Failed to create club');
+    if (response.statusCode != 201) {
+      throw Exception('Failed to create club: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -72,7 +58,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to update club');
+      throw Exception('Failed to update club: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -86,7 +72,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete club');
+      throw Exception('Failed to delete club: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -102,11 +88,11 @@ class ApiService {
     if (response.statusCode == 200) {
       return json.decode(response.body)['uid'];
     } else {
-      throw Exception('Authentication failed');
+      throw Exception('Authentication failed: ${response.statusCode} - ${response.body}');
     }
   }
 
-  // api_service.dart
+  // Получение компьютеров клуба
   static Future<List<Computer>> getClubComputers(String clubId) async {
     final response = await http.get(Uri.parse('$baseUrl/clubs/$clubId/computers'));
 
@@ -114,10 +100,11 @@ class ApiService {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => Computer.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load computers');
+      throw Exception('Failed to load computers: ${response.statusCode} - ${response.body}');
     }
   }
 
+  // Создание бронирования
   static Future<Booking> createBooking({
     required String clubId,
     required int pcNumber,
@@ -142,10 +129,11 @@ class ApiService {
     if (response.statusCode == 201) {
       return Booking.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to create booking: ${response.body}');
+      throw Exception('Failed to create booking: ${response.statusCode} - ${response.body}');
     }
   }
 
+  // Получение бронирований пользователя
   static Future<List<Booking>> getUserBookings(String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/bookings'),
@@ -156,12 +144,11 @@ class ApiService {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => Booking.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load bookings: ${response.statusCode}');
+      throw Exception('Failed to load bookings: ${response.statusCode} - ${response.body}');
     }
   }
 
-
-
+  // Отмена бронирования
   static Future<void> cancelBooking(String bookingId, String token) async {
     final response = await http.put(
       Uri.parse('$baseUrl/bookings/$bookingId/cancel'),
@@ -169,7 +156,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to cancel booking: ${response.statusCode}');
+      throw Exception('Failed to cancel booking: ${response.statusCode} - ${response.body}');
     }
   }
 }
