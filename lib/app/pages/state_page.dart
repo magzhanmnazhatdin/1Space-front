@@ -1,3 +1,5 @@
+// state_page.dart
+
 import 'package:flutter/material.dart';
 
 class StatePage extends StatelessWidget {
@@ -10,25 +12,21 @@ class StatePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Banner image
             Container(
               height: 180,
               width: double.infinity,
-              decoration: BoxDecoration(
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/club_banner.jpg'), // Replace with your banner path
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('../images/club_banner.jpg'),
                   fit: BoxFit.cover,
                 ),
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(16),
                   bottomRight: Radius.circular(16),
                 ),
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Club name
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
@@ -44,16 +42,12 @@ class StatePage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Row with Timer and WiFi
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Timer + Total Time
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
@@ -75,8 +69,6 @@ class StatePage extends StatelessWidget {
                       ),
                     ],
                   ),
-
-                  // WiFi Icon + Speed
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: const [

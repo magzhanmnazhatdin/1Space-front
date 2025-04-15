@@ -1,8 +1,9 @@
+// search_page.dart
+
 import 'package:flutter/material.dart';
-import 'package:onespace/app/components/item_card.dart'; // Assuming ItemCard is extracted here
-import 'package:onespace/app/components/my_button.dart';
-import 'package:onespace/app/pages/clubs_page.dart';
-import 'package:onespace/app/pages/map_page.dart';
+import '../components/item_card.dart';
+import '../components/my_button.dart';
+import 'clubs_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -12,17 +13,17 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  void MapPageOpen() {
+  void mapPageOpen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MapPage()),
+      MaterialPageRoute(builder: (context) => const MapPage()),
     );
   }
 
-  void FavoritesPageOpen() {
+  void favoritesPageOpen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ClubsPage()),
+      MaterialPageRoute(builder: (context) => const ClubsPage()),
     );
   }
 
@@ -30,17 +31,13 @@ class _SearchPageState extends State<SearchPage> {
     return Row(
       children: [
         const SizedBox(height: 12),
-        Column(
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: const BoxDecoration(
-                color: Colors.yellowAccent,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
+        Container(
+          width: 24,
+          height: 24,
+          decoration: const BoxDecoration(
+            color: Colors.yellowAccent,
+            shape: BoxShape.circle,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -114,8 +111,6 @@ class _SearchPageState extends State<SearchPage> {
         padding: const EdgeInsets.all(10.0),
         children: [
           const SizedBox(height: 40),
-
-          // Title
           const Center(
             child: Text(
               'OneSpace',
@@ -127,16 +122,13 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // Search Bar
-          SearchBar(
-            leading: const Icon(Icons.search),
+          const SearchBar(
+            leading: Icon(Icons.search),
             hintText: 'Search',
-            backgroundColor: WidgetStateProperty.all(Color(0xFFE2F163)),
-            textStyle: MaterialStateProperty.all(
-              const TextStyle(
+            backgroundColor: WidgetStatePropertyAll(Color(0xFFE2F163)),
+            textStyle: MaterialStatePropertyAll(
+              TextStyle(
                 color: Colors.black,
                 fontSize: 20,
                 fontFamily: 'LeagueSpartan',
@@ -144,30 +136,35 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 10),
-
-          // Map & Favorites Buttons
           MyButton(
-            onTap: MapPageOpen,
+            onTap: mapPageOpen,
             text: 'Map',
             icon: Icons.map,
           ),
           const SizedBox(height: 10),
           MyButton(
-            onTap: FavoritesPageOpen,
+            onTap: favoritesPageOpen,
             text: 'Favorites',
             icon: Icons.star,
           ),
-
           const SizedBox(height: 30),
-
-          // Favorites Sections
           itemSection("Rooms", rooms),
           itemSection("PC Characteristics", pcSpecs),
           itemSection("Additional Perks", perks),
         ],
       ),
+    );
+  }
+}
+
+class MapPage extends StatelessWidget {
+  const MapPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: Text('Map Page')),
     );
   }
 }

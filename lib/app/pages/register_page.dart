@@ -1,10 +1,15 @@
+// register_page.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:onespace/app/components/my_textfield.dart';
+import 'package:provider/provider.dart';
+import '../components/my_textfield.dart';
 import '../services/auth_service.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -29,14 +34,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Пароли не совпадают')),
+        const SnackBar(content: Text('Пароли не совпадают')),
       );
       return;
     }
 
     setState(() => _isLoading = true);
     try {
-      await authService.value.createAccount(
+      final authService = context.read<AuthService>();
+      await authService.createAccount(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -54,12 +60,13 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Registration',
           style: TextStyle(
-              color: Color(0xFFE2F163),
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.bold),
+            color: Color(0xFFE2F163),
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: Padding(
@@ -73,42 +80,48 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _emailController,
                 hintText: 'Email',
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) => value?.isEmpty ?? true ? 'Enter email' : null,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Введите email';
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                    return 'Введите корректный email';
+                  }
+                  return null;
+                },
               ),
-
               const SizedBox(height: 20),
-
               MyTextField(
                 controller: _passwordController,
                 hintText: 'Password',
                 obscureText: true,
-                validator: (value) => value?.isEmpty ?? true ? 'Enter password' : null,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Введите пароль';
+                  if (value!.length < 6) return 'Пароль должен быть не менее 6 символов';
+                  return null;
+                },
               ),
-
               const SizedBox(height: 20),
-
               MyTextField(
                 controller: _confirmPasswordController,
                 hintText: 'Confirm your password',
                 obscureText: true,
-                validator: (value) => value?.isEmpty ?? true ? 'Enter password' : null,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Подтвердите пароль';
+                  return null;
+                },
               ),
-
               const SizedBox(height: 20),
-
               _isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : ElevatedButton(
                 onPressed: _register,
-                child: Text('Sign Up'),
+                child: const Text('Sign Up'),
               ),
-
               TextButton(
                 onPressed: () => Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 ),
-                child: Text('Already have an account? Log in'),
+                child: const Text('Already have an account? Log in'),
               ),
             ],
           ),

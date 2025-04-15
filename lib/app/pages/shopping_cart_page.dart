@@ -1,5 +1,7 @@
+// cart_page.dart
+
 import 'package:flutter/material.dart';
-import '../components/item_card.dart'; // Adjust the path if needed
+import '../components/item_card.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -7,21 +9,15 @@ class CartPage extends StatelessWidget {
   Widget sectionTitle(String title) {
     return Row(
       children: [
-        Column(
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: const BoxDecoration(
-                color: Colors.yellowAccent,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
+        Container(
+          width: 24,
+          height: 24,
+          decoration: const BoxDecoration(
+            color: Colors.yellowAccent,
+            shape: BoxShape.circle,
+          ),
         ),
-
         const SizedBox(width: 12),
-
         Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -58,8 +54,6 @@ class CartPage extends StatelessWidget {
               description: item['desc']!,
               onTap: () {
                 print("Tapped on ${item['name']}");
-                // You can also navigate to a detail page here if you want
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => DetailPage(item: item)));
               },
             );
           }).toList(),
@@ -69,7 +63,6 @@ class CartPage extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +71,6 @@ class CartPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 30),
-
           itemSection("Snacks", [
             {'name': 'Chips', 'desc': 'Crunchy potato chips with sea salt'},
             {'name': 'Hotdog', 'desc': 'Grilled hotdog in a soft bun'},

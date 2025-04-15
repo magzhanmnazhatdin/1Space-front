@@ -1,9 +1,11 @@
+// services/api_service.dart
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'auth_service.dart';
+import '../models/booking_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:8080'; // Замените на ваш адрес сервера
+  static const String baseUrl = 'http://10.0.2.2:8080';
 
   // Получение всех клубов
   static Future<List<ComputerClub>> getClubs() async {
@@ -13,7 +15,7 @@ class ApiService {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) => ComputerClub.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load clubs');
+      throw Exception('Failed to load clubs: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -24,12 +26,12 @@ class ApiService {
     if (response.statusCode == 200) {
       return ComputerClub.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to load club');
+      throw Exception('Failed to load club: ${response.statusCode} - ${response.body}');
     }
   }
 
   // Создание клуба
-  static Future<String> createClub(ComputerClub club, String token) async {
+  static Future<void> createClub(ComputerClub club, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/clubs'),
       headers: {
@@ -39,10 +41,8 @@ class ApiService {
       body: json.encode(club.toJson()),
     );
 
-    if (response.statusCode == 201) {
-      return json.decode(response.body)['id'];
-    } else {
-      throw Exception('Failed to create club');
+    if (response.statusCode != 201) {
+      throw Exception('Failed to create club: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -58,7 +58,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to update club');
+      throw Exception('Failed to update club: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -72,7 +72,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete club');
+      throw Exception('Failed to delete club: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -88,43 +88,75 @@ class ApiService {
     if (response.statusCode == 200) {
       return json.decode(response.body)['uid'];
     } else {
-      throw Exception('Authentication failed');
+      throw Exception('Authentication failed: ${response.statusCode} - ${response.body}');
     }
   }
-}
 
-class ComputerClub {
-  final String id;
-  final String name;
-  final String address;
-  final double pricePerHour;
-  final int availablePCs;
+  // Получение компьютеров клуба
+  static Future<List<Computer>> getClubComputers(String clubId) async {
+    final response = await http.get(Uri.parse('$baseUrl/clubs/$clubId/computers'));
 
-  ComputerClub({
-    required this.id,
-    required this.name,
-    required this.address,
-    required this.pricePerHour,
-    required this.availablePCs,
-  });
-
-  factory ComputerClub.fromJson(Map<String, dynamic> json) {
-    return ComputerClub(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      address: json['address'] ?? '',
-      pricePerHour: (json['price_per_hour'] ?? 0).toDouble(),
-      availablePCs: json['available_pcs'] ?? 0,
-    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Computer.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load computers: ${response.statusCode} - ${response.body}');
+    }
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'address': address,
-      'price_per_hour': pricePerHour,
-      'available_pcs': availablePCs,
-    };
+  // Создание бронирования
+  static Future<Booking> createBooking({
+    required String clubId,
+    required int pcNumber,
+    required DateTime startTime,
+    required int hours,
+    required String token,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/bookings'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'club_id': clubId,
+        'pc_number': pcNumber,
+        'start_time': startTime.toUtc().toIso8601String(),
+        'hours': hours,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return Booking.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to create booking: ${response.statusCode} - ${response.body}');
+    }
+  }
+
+  // Получение бронирований пользователя
+  static Future<List<Booking>> getUserBookings(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/bookings'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => Booking.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load bookings: ${response.statusCode} - ${response.body}');
+    }
+  }
+
+  // Отмена бронирования
+  static Future<void> cancelBooking(String bookingId, String token) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/bookings/$bookingId/cancel'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to cancel booking: ${response.statusCode} - ${response.body}');
+    }
   }
 }

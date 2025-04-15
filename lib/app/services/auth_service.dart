@@ -1,19 +1,19 @@
+// services/auth_service.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'api_service.dart';
 
-ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
-
-class AuthService {
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+class AuthService with ChangeNotifier {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   String? _serverAuthToken;
 
-  User? get currentUser => firebaseAuth.currentUser;
+  User? get currentUser => _firebaseAuth.currentUser;
   bool get isLoggedIn => currentUser != null;
   String? get userEmail => currentUser?.email;
   String? get userName => currentUser?.displayName;
 
-  Stream<User?> get authStateChanges => firebaseAuth.authStateChanges();
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
   Future<String?> getServerToken() async {
     if (_serverAuthToken == null && currentUser != null) {
@@ -26,17 +26,14 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final userCredential = await firebaseAuth.signInWithEmailAndPassword(
+    final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    // Получаем токен для бэкенда
     _serverAuthToken = await userCredential.user!.getIdToken();
-
-    // Проверяем аутентификацию на бэкенде
     await ApiService.verifyAuth(_serverAuthToken!);
-
+    notifyListeners();
     return userCredential;
   }
 
@@ -44,32 +41,31 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+    final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    // Получаем токен для бэкенда
     _serverAuthToken = await userCredential.user!.getIdToken();
-
-    // Проверяем аутентификацию на бэкенде
     await ApiService.verifyAuth(_serverAuthToken!);
-
+    notifyListeners();
     return userCredential;
   }
 
   Future<void> signOut() async {
-    await firebaseAuth.signOut();
+    await _firebaseAuth.signOut();
     _serverAuthToken = null;
+    notifyListeners();
   }
 
   Future<void> resetPassword({required String email}) async {
-    await firebaseAuth.sendPasswordResetEmail(email: email);
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   Future<void> updateUsername({required String username}) async {
     await currentUser!.updateDisplayName(username);
     await currentUser!.reload();
+    notifyListeners();
   }
 
   Future<void> deleteAccount({
@@ -96,5 +92,6 @@ class AuthService {
     );
     await currentUser!.reauthenticateWithCredential(credential);
     await currentUser!.updatePassword(newPassword);
+    notifyListeners();
   }
 }
