@@ -1,9 +1,15 @@
+// reset_password_page.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../components/my_textfield.dart';
 import '../services/auth_service.dart';
 import 'login_page.dart';
 
 class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key});
+
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
 }
@@ -24,13 +30,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
     setState(() => _isLoading = true);
     try {
-      await authService.value.resetPassword(email: _emailController.text.trim());
+      final authService = context.read<AuthService>();
+      await authService.resetPassword(email: _emailController.text.trim());
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Письмо для сброса пароля отправлено')),
+        const SnackBar(content: Text('Письмо для сброса пароля отправлено')),
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -44,35 +51,46 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Сброс пароля')),
+      appBar: AppBar(title: const Text('Password Reset')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Введите email, на который зарегистрирован аккаунт',
-                style: TextStyle(fontSize: 16),
+              const Text(
+                'Введите email, на который зарегистрирован аккаунт.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontFamily: 'LeagueSpartan',
+                  fontWeight: FontWeight.normal,
+                ),
               ),
-              SizedBox(height: 20),
-              TextFormField(
+              const SizedBox(height: 20),
+              MyTextField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                hintText: 'Email',
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Введите email' : null,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Введите email';
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                    return 'Введите корректный email';
+                  }
+                  return null;
+                },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : ElevatedButton(
                 onPressed: _resetPassword,
-                child: Text('Сбросить пароль'),
+                child: const Text('Reset'),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('Назад'),
+                child: const Text('Back'),
               ),
             ],
           ),

@@ -1,9 +1,15 @@
+// register_page.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../components/my_textfield.dart';
 import '../services/auth_service.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -28,14 +34,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Пароли не совпадают')),
+        const SnackBar(content: Text('Пароли не совпадают')),
       );
       return;
     }
 
     setState(() => _isLoading = true);
     try {
-      await authService.value.createAccount(
+      final authService = context.read<AuthService>();
+      await authService.createAccount(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -52,47 +59,69 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Регистрация')),
+      appBar: AppBar(
+        title: const Text(
+          'Registration',
+          style: TextStyle(
+            color: Color(0xFFE2F163),
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
+              MyTextField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                hintText: 'Email',
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Введите email' : null,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Введите email';
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                    return 'Введите корректный email';
+                  }
+                  return null;
+                },
               ),
-              TextFormField(
+              const SizedBox(height: 20),
+              MyTextField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Пароль'),
+                hintText: 'Password',
                 obscureText: true,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Введите пароль' : null,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Введите пароль';
+                  if (value!.length < 6) return 'Пароль должен быть не менее 6 символов';
+                  return null;
+                },
               ),
-              TextFormField(
+              const SizedBox(height: 20),
+              MyTextField(
                 controller: _confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Подтвердите пароль'),
+                hintText: 'Confirm your password',
                 obscureText: true,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Подтвердите пароль' : null,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Подтвердите пароль';
+                  return null;
+                },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : ElevatedButton(
                 onPressed: _register,
-                child: Text('Зарегистрироваться'),
+                child: const Text('Sign Up'),
               ),
               TextButton(
                 onPressed: () => Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 ),
-                child: Text('Уже есть аккаунт? Войти'),
+                child: const Text('Already have an account? Log in'),
               ),
             ],
           ),
