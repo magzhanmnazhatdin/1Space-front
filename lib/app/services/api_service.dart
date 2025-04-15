@@ -3,6 +3,19 @@ import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 import '../models/booking_model.dart';
 
+const String CLUBID = "ClubID";
+
+const String CREATEDAT = "CreateAt";
+const String ENDTIME = "EndTime";
+const String STARTTIME = "StartTime";
+
+const String ID = "ID";
+const String PCNUMBER = "PCNumber";
+const String STATUS = "Status";
+const String TOTALPRICE = "TotalPrice";
+const String USERID = "UserID";
+
+
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:8080';
 
@@ -105,6 +118,38 @@ class ApiService {
     }
   }
 
+  // static Future<Booking> createBooking({
+  //   required String clubId,
+  //   required int pcNumber,
+  //   required DateTime startTime,
+  //   required int hours,
+  //   required String token,
+  // }) async {
+  //   final response = await http.post(
+  //     Uri.parse('$baseUrl/bookings'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': 'Bearer $token',
+  //     },
+  //     body: json.encode({
+  //       'ClubID': clubId,    // Изменено с CLUBID
+  //       'PCNumber': pcNumber, // Изменено с PCNUMBER
+  //       'StartTime': startTime.toIso8601String(), // Изменено с STARTTIME
+  //       'Hours': hours,
+  //     }),
+  //   );
+  //
+  //   if (response.statusCode == 201) {
+  //     return Booking.fromJson(json.decode(response.body));
+  //   } else {
+  //     // Добавьте логирование для отладки
+  //     print('Error creating booking: ${response.statusCode}');
+  //     print('Response body: ${response.body}');
+  //     throw Exception('Failed to create booking: ${response.body}');
+  //   }
+  // }
+  //
+
   static Future<Booking> createBooking({
     required String clubId,
     required int pcNumber,
@@ -119,17 +164,17 @@ class ApiService {
         'Authorization': 'Bearer $token',
       },
       body: json.encode({
-        'club_id': clubId,
-        'pc_number': pcNumber,
-        'start_time': startTime.toIso8601String(),
-        'hours': hours,
+        'ClubID': clubId,
+        'PCNumber': pcNumber,
+        'StartTime': startTime.toUtc().toIso8601String(),
+        'Hours': hours,
       }),
     );
 
     if (response.statusCode == 201) {
       return Booking.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to create booking');
+      throw Exception('Failed to create booking: ${response.body}');
     }
   }
 
@@ -146,6 +191,8 @@ class ApiService {
       throw Exception('Failed to load bookings: ${response.statusCode}');
     }
   }
+
+
 
   static Future<void> cancelBooking(String bookingId, String token) async {
     final response = await http.put(

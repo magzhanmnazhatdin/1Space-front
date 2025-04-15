@@ -25,10 +25,10 @@ class Booking {
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
       id: json['id'],
-      clubId: json['club_id'],
+      clubId: json['ClubID'],
       clubName: json['club_name'] ?? '',
       userId: json['user_id'],
-      pcNumber: json['pc_number'],
+      pcNumber: json['PCNumber'],
       startTime: DateTime.parse(json['start_time']),
       endTime: DateTime.parse(json['end_time']),
       totalPrice: (json['total_price'] ?? 0).toDouble(),
