@@ -10,14 +10,13 @@ class DetailedProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Profile',
-          style: TextStyle(color: Colors.white), // Set AppBar title text color to white
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.black, // Optional: Set AppBar background color
+        backgroundColor: Colors.black,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout, color: Colors.white), // Set icon color to white
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
-              // Accessing the signOut method using authService.value
               await authService.value.signOut();
               Navigator.pushReplacementNamed(context, '/login');
             },
@@ -27,78 +26,74 @@ class DetailedProfilePage extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          // Header section with user information (optional)
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: CircleAvatar(
               radius: 50,
               backgroundImage: NetworkImage(
-                'https://www.example.com/your-profile-image.jpg', // Replace with user profile image
+                'https://www.example.com/your-profile-image.jpg',
               ),
             ),
           ),
           // Profile options list
           ListTile(
-            leading: Icon(Icons.favorite, color: Colors.white), // Set icon color to white
+            leading: Icon(Icons.favorite, color: Colors.white),
             title: Text(
               'Favorites',
-              style: TextStyle(color: Colors.white), // Set text color to white
+              style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              // Handle navigation to favorites page
+
               Navigator.pushNamed(context, '/favorites');
             },
           ),
           ListTile(
-            leading: Icon(Icons.security, color: Colors.white), // Set icon color to white
+            leading: Icon(Icons.security, color: Colors.white),
             title: Text(
               'Privacy Policy',
-              style: TextStyle(color: Colors.white), // Set text color to white
+              style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              // Handle navigation to privacy policy page
+
               Navigator.pushNamed(context, '/privacy-policy');
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings, color: Colors.white), // Set icon color to white
+            leading: Icon(Icons.settings, color: Colors.white),
             title: Text(
               'Settings',
-              style: TextStyle(color: Colors.white), // Set text color to white
+              style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              // Handle navigation to settings page
               Navigator.pushNamed(context, '/settings');
             },
           ),
           ListTile(
-            leading: Icon(Icons.help, color: Colors.white), // Set icon color to white
+            leading: Icon(Icons.help, color: Colors.white),
             title: Text(
               'Help',
-              style: TextStyle(color: Colors.white), // Set text color to white
+              style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              // Handle navigation to help page
               Navigator.pushNamed(context, '/help');
             },
           ),
           Divider(),
           // Logout button
           ListTile(
-            leading: Icon(Icons.logout, color: Colors.white), // Set icon color to white
+            leading: Icon(Icons.logout, color: Colors.white),
             title: Text(
               'Logout',
-              style: TextStyle(color: Colors.white), // Set text color to white
+              style: TextStyle(color: Colors.white),
             ),
             onTap: () async {
-              // Sign out and navigate to login page
               await authService.value.signOut();
               Navigator.pushReplacementNamed(context, '/login');
             },
           ),
         ],
       ),
-      backgroundColor: Colors.black, // Optional: Set background color of the page
+      backgroundColor: Colors.black,
     );
   }
 }

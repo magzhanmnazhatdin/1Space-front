@@ -107,11 +107,11 @@ class ProfilePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          MyButton(
-            onTap: DetailedProfilePageOpen,
-            text: 'Details',
-            icon: Icons.info
-          ),
+          // MyButton(
+          //   onTap: DetailedProfilePageOpen,
+          //   text: 'Details',
+          //   icon: Icons.info
+          // ),
 
           SizedBox(
             width: double.infinity,
