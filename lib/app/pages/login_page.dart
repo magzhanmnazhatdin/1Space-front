@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'register_page.dart';
 import 'reset_password_page.dart';
-import 'home_page.dart';
+import '../components/my_textfield.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -45,47 +45,92 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Вход')),
+      appBar: AppBar(
+        title: Text(
+          'Log In',
+          style: TextStyle(
+              color: Color(0xFFE2F163),
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold),
+        ),
+      ),
+      backgroundColor: Color(0xFF141414),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
+              const SizedBox(height: 50),
+
+              Text(
+                'Welcome!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Text(
+                'Please log in to continue.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontFamily: 'LeagueSpartan',
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // email textfield
+              MyTextField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                hintText: 'Email',
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Введите email' : null,
+                validator: (value) => value?.isEmpty ?? true ? 'Введите email' : null,
               ),
-              TextFormField(
+
+              const SizedBox(height: 20),
+
+              // pass textfield
+              MyTextField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Пароль'),
+                hintText: 'Password',
                 obscureText: true,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Введите пароль' : null,
+                validator: (value) => value?.isEmpty ?? true ? 'Введите пароль' : null,
               ),
-              SizedBox(height: 20),
+
+              const SizedBox(height: 50),
+
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
                 onPressed: _login,
-                child: Text('Войти'),
+                child: Text('Log In'),
               ),
+
+              const SizedBox(height: 10),
+
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => RegisterPage()),
                 ),
-                child: Text('Создать аккаунт'),
+                child: Text('Sign Up'),
               ),
+
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ResetPasswordPage()),
                 ),
-                child: Text('Забыли пароль?'),
+                child: Text('Forgot password?'),
               ),
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../components/my_textfield.dart';
 import '../services/auth_service.dart';
 import 'login_page.dart';
 
@@ -44,35 +45,44 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Сброс пароля')),
+      appBar: AppBar(title: Text('Password Reset')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Введите email, на который зарегистрирован аккаунт',
-                style: TextStyle(fontSize: 16),
+                  'Enter the email address to which the account is registered.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontFamily: 'LeagueSpartan',
+                    fontWeight: FontWeight.normal,)
               ),
+
               SizedBox(height: 20),
-              TextFormField(
+
+              MyTextField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                hintText: 'Email',
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Введите email' : null,
+                validator: (value) => value?.isEmpty ?? true ? 'Введите email' : null,
               ),
+
               SizedBox(height: 20),
+
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(
                 onPressed: _resetPassword,
-                child: Text('Сбросить пароль'),
+                child: Text('Reset'),
               ),
+
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('Назад'),
+                child: Text('Back'),
               ),
             ],
           ),

@@ -1,12 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'app/pages/home_page.dart';
+import 'package:onespace/app/components/bottom_bar.dart';
 import 'app/pages/login_page.dart';
 import 'app/services/auth_service.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -46,13 +45,28 @@ class MyApp extends StatelessWidget {
           ],
           title: 'Firebase Auth Demo',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
+              textTheme: TextTheme(
+                bodyMedium: TextStyle(color: Colors.white),
+              ),
+              scaffoldBackgroundColor: Color(0xFF141414),
+              primarySwatch: Colors.blue,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+              appBarTheme: AppBarTheme(
+                backgroundColor: Color(0xFF141414),
+                centerTitle: true,
+                titleTextStyle: TextStyle(
+                  color: Color(0xFFE2F163),
+                  fontFamily: 'Poppins',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                iconTheme: IconThemeData(color: Color(0xFFE2F163)),
+              )
           ),
-          home: auth.currentUser != null ? HomePage() : LoginPage(),
+          home: auth.currentUser != null ? CustomGNavBar() : LoginPage(),
           routes: {
             '/login': (context) => LoginPage(),
-            '/home': (context) => HomePage(),
+            '/home': (context) => CustomGNavBar(),
           },
         );
       },

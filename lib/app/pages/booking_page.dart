@@ -172,14 +172,14 @@ class _BookingPageState extends State<BookingPage> {
                 // Список компьютеров
                 ...computers.map((computer) => Card(
                   child: ListTile(
-                    title: Text('Компьютер №${computer.number}'),
+                    title: Text('Компьютер №${computer.pcNumber}'),
                     subtitle: Text(computer.description),
                     trailing: computer.isAvailable
                         ? const Icon(Icons.check, color: Colors.green)
                         : const Icon(Icons.close, color: Colors.red),
-                    selected: _selectedComputer == computer.number,
+                    selected: _selectedComputer == computer.pcNumber,
                     onTap: computer.isAvailable
-                        ? () => setState(() => _selectedComputer = computer.number)
+                        ? () => setState(() => _selectedComputer = computer.pcNumber)
                         : null,
                   ),
                 )),

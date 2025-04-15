@@ -25,10 +25,10 @@ class Booking {
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
       id: json['id'],
-      clubId: json['ClubID'],
+      clubId: json['club_id'],
       clubName: json['club_name'] ?? '',
       userId: json['user_id'],
-      pcNumber: json['PCNumber'],
+      pcNumber: json['pc_number'],
       startTime: DateTime.parse(json['start_time']),
       endTime: DateTime.parse(json['end_time']),
       totalPrice: (json['total_price'] ?? 0).toDouble(),
@@ -40,14 +40,14 @@ class Booking {
 class Computer {
   final String id;
   final String clubId;
-  final int number;
+  final int pcNumber;
   final String description;
   final bool isAvailable;
 
   Computer({
     required this.id,
     required this.clubId,
-    required this.number,
+    required this.pcNumber,
     required this.description,
     required this.isAvailable,
   });
@@ -56,7 +56,7 @@ class Computer {
     return Computer(
       id: json['id'],
       clubId: json['club_id'],
-      number: json['number'],
+      pcNumber: json['pc_number'],
       description: json['description'] ?? '',
       isAvailable: json['is_available'] ?? false,
     );
@@ -80,7 +80,7 @@ class ComputerClub {
 
   factory ComputerClub.fromJson(Map<String, dynamic> json) {
     return ComputerClub(
-      id: json['id'] ?? '',
+      id: json['club_id'] ?? '',
       name: json['name'] ?? '',
       address: json['address'] ?? '',
       pricePerHour: (json['price_per_hour'] ?? 0).toDouble(),
@@ -90,7 +90,7 @@ class ComputerClub {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'club_id': id,
       'name': name,
       'address': address,
       'price_per_hour': pricePerHour,
