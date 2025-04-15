@@ -69,7 +69,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Мои бронирования')),
+      appBar: AppBar(title: const Text('Мои бронироasdasdasdвания')),
       body: RefreshIndicator(
         onRefresh: _refreshBookings,
         child: FutureBuilder<List<Booking>>(
