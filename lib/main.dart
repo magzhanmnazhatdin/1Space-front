@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:onespace/app/components/bottom_bar.dart';
 import 'app/pages/home_page.dart';
 import 'app/pages/login_page.dart';
 import 'app/services/auth_service.dart';
@@ -40,10 +41,10 @@ class MyApp extends StatelessWidget {
               iconTheme: IconThemeData(color: Color(0xFFE2F163)),
             )
           ),
-          home: auth.currentUser != null ? HomePage() : LoginPage(),
+          home: auth.currentUser != null ? CustomGNavBar() : LoginPage(),
           routes: {
             '/login': (context) => LoginPage(),
-            '/home': (context) => HomePage(),
+            '/home': (context) => CustomGNavBar(),
           },
         );
       },
