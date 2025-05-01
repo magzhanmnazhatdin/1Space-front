@@ -130,13 +130,16 @@ class _BookingPageState extends State<BookingPage> {
             return ListView(
               children: [
                 ListTile(
+                  tileColor: Colors.white,
                   title: Text(_selectedDate == null
                       ? 'Выберите дату'
                       : DateFormat.yMMMMd('ru_RU').format(_selectedDate!)),
                   trailing: const Icon(Icons.calendar_today),
                   onTap: () => _selectDate(context),
                 ),
+                const SizedBox(height: 10,),
                 ListTile(
+                  tileColor: Colors.white,
                   title: Text(_selectedTime == null
                       ? 'Выберите время'
                       : _selectedTime!.format(context)),
