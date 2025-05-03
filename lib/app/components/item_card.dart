@@ -15,7 +15,7 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Handle tap
+      onTap: onTap,
       child: Container(
         width: 160,
         margin: const EdgeInsets.all(8),

@@ -1,5 +1,3 @@
-// reset_password_page.dart
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +30,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     try {
       final authService = context.read<AuthService>();
       await authService.resetPassword(email: _emailController.text.trim());
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Письмо для сброса пароля отправлено')),
       );
@@ -40,11 +39,19 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message ?? 'Ошибка сброса пароля')),
       );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка сброса пароля: $e')),
+      );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

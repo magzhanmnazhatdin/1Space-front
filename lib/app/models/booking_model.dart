@@ -1,9 +1,7 @@
-// models/booking_model.dart
-
 class Booking {
   final String id;
   final String clubId;
-  final String clubName;
+  final String clubName; // Может быть пустым, если бэкенд не вернёт
   final String userId;
   final int pcNumber;
   final DateTime startTime;
@@ -27,17 +25,26 @@ class Booking {
 
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
-      id: json['id'] ?? '',
-      clubId: json['club_id'] ?? '',
-      clubName: json['club_name'] ?? '',
-      userId: json['user_id'] ?? '',
-      pcNumber: json['pc_number'] ?? 0,
-      startTime: DateTime.parse(json['start_time'] ?? DateTime.now().toIso8601String()),
-      endTime: DateTime.parse(json['end_time'] ?? DateTime.now().toIso8601String()),
+      id: json['id'] as String? ?? '',
+      clubId: json['club_id'] as String? ?? '',
+      clubName: json['club_name'] as String? ?? 'Unknown Club', // Заполняем значением по умолчанию
+      userId: json['user_id'] as String? ?? '',
+      pcNumber: json['pc_number'] as int? ?? 0,
+      startTime: _parseDateTime(json['start_time']),
+      endTime: _parseDateTime(json['end_time']),
       totalPrice: (json['total_price'] as num?)?.toDouble() ?? 0.0,
-      status: json['status'] ?? 'unknown',
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
+      status: json['status'] as String? ?? 'unknown',
+      createdAt: _parseDateTime(json['created_at']),
     );
+  }
+
+  static DateTime _parseDateTime(dynamic date) {
+    if (date == null) return DateTime.now();
+    try {
+      return DateTime.parse(date as String);
+    } catch (e) {
+      return DateTime.now();
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -73,11 +80,11 @@ class Computer {
 
   factory Computer.fromJson(Map<String, dynamic> json) {
     return Computer(
-      id: json['id'] ?? '',
-      clubId: json['club_id'] ?? '',
-      pcNumber: json['pc_number'] ?? 0,
-      description: json['description'] ?? '',
-      isAvailable: json['is_available'] ?? false,
+      id: json['id'] as String? ?? '',
+      clubId: json['club_id'] as String? ?? '',
+      pcNumber: json['pc_number'] as int? ?? 0,
+      description: json['description'] as String? ?? '',
+      isAvailable: json['is_available'] as bool? ?? false,
     );
   }
 
@@ -109,17 +116,17 @@ class ComputerClub {
 
   factory ComputerClub.fromJson(Map<String, dynamic> json) {
     return ComputerClub(
-      id: json['id'] ?? '', // Исправлено с club_id на id
-      name: json['name'] ?? '',
-      address: json['address'] ?? '',
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      address: json['address'] as String? ?? '',
       pricePerHour: (json['price_per_hour'] as num?)?.toDouble() ?? 0.0,
-      availablePCs: json['available_pcs'] ?? 0,
+      availablePCs: json['available_pcs'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id, // Исправлено с club_id на id
+      'id': id,
       'name': name,
       'address': address,
       'price_per_hour': pricePerHour,

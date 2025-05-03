@@ -1,5 +1,3 @@
-// my_bookings_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +39,9 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
         SnackBar(content: Text('Ошибка загрузки бронирований: $e')),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -62,7 +62,9 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
         SnackBar(content: Text('Ошибка отмены бронирования: $e')),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -99,8 +101,12 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Клуб: ${booking.clubName}'),
-                        Text('С ${DateFormat('dd.MM.yyyy HH:mm', 'ru_RU').format(booking.startTime)}'),
-                        Text('До ${DateFormat('dd.MM.yyyy HH:mm', 'ru_RU').format(booking.endTime)}'),
+                        Text(
+                          'С ${DateFormat('dd.MM.yyyy HH:mm', 'ru_RU').format(booking.startTime)}',
+                        ),
+                        Text(
+                          'До ${DateFormat('dd.MM.yyyy HH:mm', 'ru_RU').format(booking.endTime)}',
+                        ),
                         Text('Сумма: ${booking.totalPrice} руб.'),
                         Text('Статус: ${booking.status}'),
                       ],

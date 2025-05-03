@@ -1,5 +1,3 @@
-// cart_page.dart
-
 import 'package:flutter/material.dart';
 import '../components/item_card.dart';
 
@@ -65,6 +63,7 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Integrate with backend to fetch cart items
     return Scaffold(
       backgroundColor: Colors.black,
       body: ListView(

@@ -1,5 +1,3 @@
-// booking_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -9,8 +7,13 @@ import '../models/booking_model.dart';
 
 class BookingPage extends StatefulWidget {
   final String clubId;
+  final double pricePerHour; // Добавляем цену за час из клуба
 
-  const BookingPage({required this.clubId, Key? key}) : super(key: key);
+  const BookingPage({
+    required this.clubId,
+    required this.pricePerHour,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _BookingPageState createState() => _BookingPageState();
@@ -105,7 +108,9 @@ class _BookingPageState extends State<BookingPage> {
         SnackBar(content: Text('Ошибка бронирования: $e')),
       );
     } finally {
-      setState(() => _isBooking = false);
+      if (mounted) {
+        setState(() => _isBooking = false);
+      }
     }
   }
 
@@ -137,7 +142,7 @@ class _BookingPageState extends State<BookingPage> {
                   trailing: const Icon(Icons.calendar_today),
                   onTap: () => _selectDate(context),
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 10),
                 ListTile(
                   tileColor: Colors.white,
                   title: Text(_selectedTime == null
@@ -165,6 +170,11 @@ class _BookingPageState extends State<BookingPage> {
                       },
                     ),
                   ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Стоимость: ${widget.pricePerHour * _hours} руб.',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 const Text('Доступные компьютеры:', style: TextStyle(fontSize: 16)),

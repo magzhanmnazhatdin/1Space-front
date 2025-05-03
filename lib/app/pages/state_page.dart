@@ -1,5 +1,3 @@
-// state_page.dart
-
 import 'package:flutter/material.dart';
 
 class StatePage extends StatelessWidget {
@@ -7,6 +5,7 @@ class StatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Integrate with backend to fetch real-time state data
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -17,7 +16,7 @@ class StatePage extends StatelessWidget {
               width: double.infinity,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('../images/club_banner.jpg'),
+                  image: AssetImage('assets/images/club_banner.jpg'),
                   fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.only(

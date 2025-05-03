@@ -7,7 +7,12 @@ class MapPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Map'),
+        title: const Text('Map'),
+      ),
+      body: const Center(
+        child: Text(
+          'Map Page (You can integrate Google Maps here)',
+        ),
       ),
     );
   }

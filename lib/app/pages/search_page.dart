@@ -1,9 +1,10 @@
-// search_page.dart
-
 import 'package:flutter/material.dart';
 import '../components/item_card.dart';
 import '../components/my_button.dart';
+import 'club_detail_page.dart';
 import 'clubs_page.dart';
+import '../models/booking_model.dart';
+import '../services/api_service.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -13,6 +14,15 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  late Future<List<ComputerClub>> _clubsFuture;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _clubsFuture = ApiService.getClubs();
+  }
+
   void mapPageOpen() {
     Navigator.push(
       context,
@@ -61,7 +71,13 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget itemSection(String title, List<Map<String, String>> items) {
+  Widget itemSection(String title, List<ComputerClub> clubs) {
+    final filteredClubs = clubs
+        .where((club) =>
+    club.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+        club.address.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -70,12 +86,17 @@ class _SearchPageState extends State<SearchPage> {
         Wrap(
           spacing: 4,
           runSpacing: 4,
-          children: items.map((item) {
+          children: filteredClubs.map((club) {
             return ItemCard(
-              name: item['name']!,
-              description: item['desc']!,
+              name: club.name,
+              description: club.address,
               onTap: () {
-                print("Tapped on ${item['name']}");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ClubDetailPage(clubId: club.id),
+                  ),
+                );
               },
             );
           }).toList(),
@@ -87,24 +108,6 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final rooms = [
-      {"name": "VR Room", "desc": "Immersive VR experience"},
-      {"name": "Cozy Booth", "desc": "Private and comfy"},
-      {"name": "Streaming Setup", "desc": "Perfect for live content"},
-    ];
-
-    final pcSpecs = [
-      {"name": "RTX 4080", "desc": "Top-tier GPU"},
-      {"name": "144Hz Monitor", "desc": "Smooth visuals"},
-      {"name": "Mechanical Keyboard", "desc": "Tactile & fast"},
-    ];
-
-    final perks = [
-      {"name": "Free Snacks", "desc": "All you can eat"},
-      {"name": "VIP Access", "desc": "Skip the line"},
-      {"name": "Discounts", "desc": "Save on long sessions"},
-    ];
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: ListView(
@@ -123,11 +126,11 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           const SizedBox(height: 20),
-          const SearchBar(
-            leading: Icon(Icons.search),
+          SearchBar(
+            leading: const Icon(Icons.search),
             hintText: 'Search',
-            backgroundColor: WidgetStatePropertyAll(Color(0xFFE2F163)),
-            textStyle: MaterialStatePropertyAll(
+            backgroundColor: const WidgetStatePropertyAll(Color(0xFFE2F163)),
+            textStyle: const MaterialStatePropertyAll(
               TextStyle(
                 color: Colors.black,
                 fontSize: 20,
@@ -135,6 +138,11 @@ class _SearchPageState extends State<SearchPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+              });
+            },
           ),
           const SizedBox(height: 10),
           MyButton(
@@ -149,9 +157,19 @@ class _SearchPageState extends State<SearchPage> {
             icon: Icons.star,
           ),
           const SizedBox(height: 30),
-          itemSection("Rooms", rooms),
-          itemSection("PC Characteristics", pcSpecs),
-          itemSection("Additional Perks", perks),
+          FutureBuilder<List<ComputerClub>>(
+            future: _clubsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Ошибка: ${snapshot.error}'));
+              }
+              final clubs = snapshot.data ?? [];
+              return itemSection("Clubs", clubs);
+            },
+          ),
         ],
       ),
     );
