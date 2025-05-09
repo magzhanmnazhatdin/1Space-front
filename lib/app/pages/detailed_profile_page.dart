@@ -1,14 +1,15 @@
-// detailed_profile_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/auth_service.dart'; // Исправлен импорт
+import '../services/auth_service.dart';
 
 class DetailedProfilePage extends StatelessWidget {
   const DetailedProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authService = context.read<AuthService>();
+    final user = authService.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -20,9 +21,8 @@ class DetailedProfilePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
-              final authService = context.read<AuthService>();
               await authService.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
+              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
             },
           ),
         ],
@@ -30,15 +30,33 @@ class DetailedProfilePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 16.0),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
             child: CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage(
-                'https://www.example.com/your-profile-image.jpg',
+              backgroundImage: user?.photoURL != null
+                  ? NetworkImage(user!.photoURL!)
+                  : const NetworkImage(
+                'https://www.example.com/default-profile-image.jpg',
               ),
             ),
           ),
+          if (user?.displayName != null)
+            ListTile(
+              leading: const Icon(Icons.person, color: Colors.white),
+              title: Text(
+                user!.displayName!,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          if (user?.email != null)
+            ListTile(
+              leading: const Icon(Icons.email, color: Colors.white),
+              title: Text(
+                user!.email!,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
           ListTile(
             leading: const Icon(Icons.favorite, color: Colors.white),
             title: const Text(
@@ -87,9 +105,8 @@ class DetailedProfilePage extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
             onTap: () async {
-              final authService = context.read<AuthService>();
               await authService.signOut();
-              Navigator.pushReplacementNamed(context, '/login');
+              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
             },
           ),
         ],
@@ -99,7 +116,6 @@ class DetailedProfilePage extends StatelessWidget {
   }
 }
 
-// Заглушки для страниц, которых нет
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
 

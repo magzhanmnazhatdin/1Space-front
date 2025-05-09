@@ -1,5 +1,3 @@
-// clubs_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/booking_model.dart';
@@ -34,7 +32,9 @@ class _ClubsPageState extends State<ClubsPage> {
         SnackBar(content: Text('Ошибка загрузки клубов: $e')),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -49,7 +49,7 @@ class _ClubsPageState extends State<ClubsPage> {
     }
 
     final club = ComputerClub(
-      id: 'club-${DateTime.now().millisecondsSinceEpoch}',
+      id: '', // ID будет сгенерирован бэкендом
       name: 'Новый клуб',
       address: 'Новый адрес',
       pricePerHour: 100,
@@ -73,7 +73,12 @@ class _ClubsPageState extends State<ClubsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Компьютерные клубы'),
+        title: const Text(
+          'Компьютерные клубы',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -82,15 +87,21 @@ class _ClubsPageState extends State<ClubsPage> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : ListView.builder(
         itemCount: _clubs.length,
         itemBuilder: (context, index) {
           final club = _clubs[index];
           return ListTile(
-            title: Text(club.name),
-            subtitle: Text('${club.address} - ${club.pricePerHour} руб/час'),
-            trailing: Text('Доступно ПК: ${club.availablePCs}'),
+            title: Text(club.name, style: const TextStyle(color: Colors.white)),
+            subtitle: Text(
+              '${club.address} - ${club.pricePerHour} руб/час',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            trailing: Text(
+              'Доступно ПК: ${club.availablePCs}',
+              style: const TextStyle(color: Colors.white70),
+            ),
             onTap: () {
               Navigator.push(
                 context,

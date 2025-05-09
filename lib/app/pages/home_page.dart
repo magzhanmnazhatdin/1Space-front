@@ -1,9 +1,8 @@
-// home_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import 'clubs_page.dart';
+import 'my_bookings_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -35,6 +34,14 @@ class HomePage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const ClubsPage()),
             ),
             child: const Text('View Clubs'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MyBookingsPage()),
+            ),
+            child: const Text('My Bookings'),
           ),
         ],
       ),

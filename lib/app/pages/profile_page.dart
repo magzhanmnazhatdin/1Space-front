@@ -1,14 +1,25 @@
-// profile_page.dart
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
+import 'my_bookings_page.dart';
 import '../components/my_button.dart';
 import 'detailed_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  void myBookingsPageOpen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MyBookingsPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authService = context.read<AuthService>();
+    final user = authService.currentUser;
+
     void detailedProfilePageOpen() {
       Navigator.push(
         context,
@@ -27,7 +38,7 @@ class ProfilePage extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: const DecorationImage(
-                image: AssetImage('../images/computer_aesthetic_banner.jpeg'),
+                image: AssetImage('assets/images/computer_aesthetic_banner.jpeg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -113,6 +124,12 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 20),
+          MyButton(
+            onTap: () => myBookingsPageOpen(context),
+            text: 'My Bookings',
+            icon: Icons.edit_calendar,
           ),
         ],
       ),
