@@ -5,6 +5,29 @@ import '../models/booking_model.dart';
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:8080';
 
+  static Future<String> createPaymentIntent({
+    required int amount,   // in smallest currency unit, e.g. cents
+    required String currency, // e.g. "rub"
+    required String token,    // ваш серверный токен для авторизации
+  }) async {
+    final resp = await http.post(
+      Uri.parse('$baseUrl/payments/create'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'amount': amount,
+        'currency': currency,
+      }),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create PaymentIntent: ${resp.body}');
+    }
+    final data = json.decode(resp.body);
+    return data['clientSecret'] as String;
+  }
+
   // Получение всех клубов
   static Future<List<ComputerClub>> getClubs() async {
     try {

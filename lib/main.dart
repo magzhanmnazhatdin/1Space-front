@@ -1,16 +1,14 @@
 // main.dart
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'app/components/bottom_bar.dart';
-import 'app/pages/home_page.dart';
 import 'app/pages/login_page.dart';
 import 'app/pages/detailed_profile_page.dart';
 import 'app/services/auth_service.dart';
 import 'firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -22,18 +20,23 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Инициализируем ключ
+  Stripe.publishableKey = 'pk_test_51RMP6sQPF9VA2MpwMsgFmYamJQJTUaw8CXUAqJdkuDmDiHWoypviqmtiUsN0EySkx4LADoYqzewYWk72T3LMEE7y00Hhfnb6ac';
+  // Если нужно, можно указать Apple Pay / Google Pay merchantId:
+  // Stripe.merchantIdentifier = 'merchant.com.your.app';
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
       ],
-      child: const MyApp(),
+      child: const OneSpaceApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class OneSpaceApp extends StatelessWidget {
+  const OneSpaceApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,7 @@ class MyApp extends StatelessWidget {
             Locale('ru', 'RU'),
             Locale('en', 'US'),
           ],
-          title: 'Firebase Auth Demo',
+          title: 'OneSpace',
           theme: ThemeData(
             textTheme: const TextTheme(
               bodyMedium: TextStyle(color: Colors.white),

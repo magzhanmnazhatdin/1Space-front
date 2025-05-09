@@ -1,18 +1,22 @@
+// lib/pages/booking_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
+
+import '../models/booking_model.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
-import '../models/booking_model.dart';
 
 class BookingPage extends StatefulWidget {
   final String clubId;
-  final double pricePerHour; // Добавляем цену за час из клуба
+  final double pricePerHour;
 
   const BookingPage({
+    Key? key,
     required this.clubId,
     required this.pricePerHour,
-    Key? key,
   }) : super(key: key);
 
   @override
@@ -33,27 +37,23 @@ class _BookingPageState extends State<BookingPage> {
     _computersFuture = ApiService.getClubComputers(widget.clubId);
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
+  Future<void> _selectDate(BuildContext ctx) async {
+    final picked = await showDatePicker(
+      context: ctx,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 30)),
       locale: const Locale('ru', 'RU'),
     );
-    if (picked != null) {
-      setState(() => _selectedDate = picked);
-    }
+    if (picked != null) setState(() => _selectedDate = picked);
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
+  Future<void> _selectTime(BuildContext ctx) async {
+    final picked = await showTimePicker(
+      context: ctx,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null) {
-      setState(() => _selectedTime = picked);
-    }
+    if (picked != null) setState(() => _selectedTime = picked);
   }
 
   Future<void> _bookComputer() async {
@@ -71,7 +71,6 @@ class _BookingPageState extends State<BookingPage> {
       _selectedTime!.hour,
       _selectedTime!.minute,
     );
-
     if (startTime.isBefore(DateTime.now())) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Нельзя забронировать на прошедшее время')),
@@ -83,14 +82,28 @@ class _BookingPageState extends State<BookingPage> {
     try {
       final authService = context.read<AuthService>();
       final token = await authService.getServerToken();
+      if (token == null) throw Exception('Ошибка аутентификации');
 
-      if (token == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ошибка аутентификации')),
-        );
-        return;
-      }
+      // 1) Создаём PaymentIntent на сервере
+      final amountInCents = (widget.pricePerHour * _hours * 100).round();
+      final clientSecret = await ApiService.createPaymentIntent(
+        amount: amountInCents,
+        currency: 'rub',
+        token: token,
+      );
 
+      // 2) Инициализируем платёжный лист
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'OneSpace',
+        ),
+      );
+
+      // 3) Показываем платёжный интерфейс
+      await Stripe.instance.presentPaymentSheet();
+
+      // 4) После успешной оплаты — создаём бронирование
       await ApiService.createBooking(
         clubId: widget.clubId,
         pcNumber: _selectedComputer!,
@@ -100,17 +113,20 @@ class _BookingPageState extends State<BookingPage> {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Бронирование успешно создано')),
+        const SnackBar(content: Text('Оплата и бронирование прошли успешно')),
       );
       Navigator.pop(context, true);
+
+    } on StripeException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка при оплате: ${e.error.localizedMessage}')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка бронирования: $e')),
+        SnackBar(content: Text('Ошибка: $e')),
       );
     } finally {
-      if (mounted) {
-        setState(() => _isBooking = false);
-      }
+      if (mounted) setState(() => _isBooking = false);
     }
   }
 
@@ -119,54 +135,52 @@ class _BookingPageState extends State<BookingPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Бронирование компьютера')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: FutureBuilder<List<Computer>>(
           future: _computersFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+          builder: (ctx, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-
-            if (snapshot.hasError) {
-              return Center(child: Text('Ошибка: ${snapshot.error}'));
+            if (snap.hasError) {
+              return Center(child: Text('Ошибка: ${snap.error}'));
             }
-
-            final computers = snapshot.data ?? [];
+            final computers = snap.data ?? [];
             return ListView(
               children: [
                 ListTile(
                   tileColor: Colors.white,
-                  title: Text(_selectedDate == null
-                      ? 'Выберите дату'
-                      : DateFormat.yMMMMd('ru_RU').format(_selectedDate!)),
+                  title: Text(
+                    _selectedDate == null
+                        ? 'Выберите дату'
+                        : DateFormat.yMMMMd('ru_RU').format(_selectedDate!),
+                  ),
                   trailing: const Icon(Icons.calendar_today),
                   onTap: () => _selectDate(context),
                 ),
                 const SizedBox(height: 10),
                 ListTile(
                   tileColor: Colors.white,
-                  title: Text(_selectedTime == null
-                      ? 'Выберите время'
-                      : _selectedTime!.format(context)),
+                  title: Text(
+                    _selectedTime == null
+                        ? 'Выберите время'
+                        : _selectedTime!.format(context),
+                  ),
                   trailing: const Icon(Icons.access_time),
                   onTap: () => _selectTime(context),
                 ),
+                const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Text('Количество часов:'),
+                    const Text('Часов:'),
                     const SizedBox(width: 10),
                     DropdownButton<int>(
                       value: _hours,
-                      items: [1, 2, 3, 4, 5, 6].map((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text('$value'),
-                        );
+                      items: [1,2,3,4,5,6].map((h) {
+                        return DropdownMenuItem(value: h, child: Text('$h'));
                       }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _hours = value);
-                        }
+                      onChanged: (v) {
+                        if (v != null) setState(() => _hours = v);
                       },
                     ),
                   ],
@@ -174,20 +188,23 @@ class _BookingPageState extends State<BookingPage> {
                 const SizedBox(height: 10),
                 Text(
                   'Стоимость: ${widget.pricePerHour * _hours} руб.',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold
+                  ),
                 ),
                 const SizedBox(height: 20),
                 const Text('Доступные компьютеры:', style: TextStyle(fontSize: 16)),
-                ...computers.map((computer) => Card(
+                const SizedBox(height: 8),
+                ...computers.map((c) => Card(
                   child: ListTile(
-                    title: Text('Компьютер №${computer.pcNumber}'),
-                    subtitle: Text(computer.description),
-                    trailing: computer.isAvailable
+                    title: Text('Компьютер №${c.pcNumber}'),
+                    subtitle: Text(c.description),
+                    trailing: c.isAvailable
                         ? const Icon(Icons.check, color: Colors.green)
                         : const Icon(Icons.close, color: Colors.red),
-                    selected: _selectedComputer == computer.pcNumber,
-                    onTap: computer.isAvailable
-                        ? () => setState(() => _selectedComputer = computer.pcNumber)
+                    selected: _selectedComputer == c.pcNumber,
+                    onTap: c.isAvailable
+                        ? () => setState(() => _selectedComputer = c.pcNumber)
                         : null,
                   ),
                 )),
@@ -196,7 +213,7 @@ class _BookingPageState extends State<BookingPage> {
                     ? const Center(child: CircularProgressIndicator())
                     : ElevatedButton(
                   onPressed: _bookComputer,
-                  child: const Text('Забронировать'),
+                  child: const Text('Оплатить и забронировать'),
                 ),
               ],
             );

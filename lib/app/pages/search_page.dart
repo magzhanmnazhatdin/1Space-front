@@ -130,7 +130,7 @@ class _SearchPageState extends State<SearchPage> {
             leading: const Icon(Icons.search),
             hintText: 'Search',
             backgroundColor: const WidgetStatePropertyAll(Color(0xFFE2F163)),
-            textStyle: const MaterialStatePropertyAll(
+            textStyle: const WidgetStatePropertyAll(
               TextStyle(
                 color: Colors.black,
                 fontSize: 20,
