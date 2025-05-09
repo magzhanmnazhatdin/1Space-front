@@ -65,7 +65,7 @@ class ApiService {
   static Future<String> createClub(ComputerClub club, String token) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/clubs'),
+        Uri.parse('$baseUrl/manager/clubs'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -89,7 +89,7 @@ class ApiService {
   static Future<void> updateClub(ComputerClub club, String token) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/clubs/${club.id}'),
+        Uri.parse('$baseUrl/manager/clubs/${club.id}'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -110,7 +110,7 @@ class ApiService {
   static Future<void> deleteClub(String id, String token) async {
     try {
       final response = await http.delete(
-        Uri.parse('$baseUrl/clubs/$id'),
+        Uri.parse('$baseUrl/manager/clubs/$id'),
         headers: {
           'Authorization': 'Bearer $token',
         },
