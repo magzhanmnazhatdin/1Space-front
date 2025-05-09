@@ -32,7 +32,9 @@ class _ClubsPageState extends State<ClubsPage> {
         SnackBar(content: Text('Ошибка загрузки клубов: $e')),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -47,7 +49,7 @@ class _ClubsPageState extends State<ClubsPage> {
     }
 
     final club = ComputerClub(
-      id: 'club-${DateTime.now().millisecondsSinceEpoch}',
+      id: '', // ID будет сгенерирован бэкендом
       name: 'Новый клуб',
       address: 'Новый адрес',
       pricePerHour: 100,
@@ -71,7 +73,10 @@ class _ClubsPageState extends State<ClubsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Компьютерные клубы', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Компьютерные клубы',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [

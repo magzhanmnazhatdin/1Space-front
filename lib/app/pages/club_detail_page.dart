@@ -1,5 +1,3 @@
-// club_detail_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/booking_model.dart';
@@ -37,7 +35,12 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
         final token = await authService.getServerToken();
         if (token == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ошибка аутентификации', style: TextStyle(color: Colors.white))),
+            const SnackBar(
+              content: Text(
+                'Ошибка аутентификации',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           );
           return;
         }
@@ -47,11 +50,21 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
           _clubFuture = ApiService.getClub(widget.clubId);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Клуб успешно обновлен', style: TextStyle(color: Colors.white))),
+          const SnackBar(
+            content: Text(
+              'Клуб успешно обновлен',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка обновления клуба: $e', style: const TextStyle(color: Colors.white))),
+          SnackBar(
+            content: Text(
+              'Ошибка обновления клуба: $e',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
         );
       }
     }
@@ -61,7 +74,10 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Информация о клубе', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Информация о клубе',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -80,7 +96,12 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Ошибка: ${snapshot.error}', style: const TextStyle(color: Colors.white)));
+            return Center(
+              child: Text(
+                'Ошибка: ${snapshot.error}',
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
           }
 
           final club = snapshot.data!;
@@ -89,23 +110,41 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(club.name, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
+                Text(
+                  club.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(color: Colors.white),
+                ),
                 const SizedBox(height: 10),
-                Text('Адрес: ${club.address}', style: const TextStyle(color: Colors.white)),
-                Text('Цена за час: ${club.pricePerHour} руб.', style: const TextStyle(color: Colors.white)),
-                Text('Доступно компьютеров: ${club.availablePCs}', style: const TextStyle(color: Colors.white)),
+                Text(
+                  'Адрес: ${club.address}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                Text(
+                  'Цена за час: ${club.pricePerHour} руб.',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                Text(
+                  'Доступно компьютеров: ${club.availablePCs}',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFE2F163),
+                      backgroundColor: const Color(0xFFE2F163),
                       foregroundColor: Colors.black,
                     ),
                     onPressed: () async {
                       final result = await Navigator.push<bool>(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BookingPage(clubId: club.id),
+                          builder: (context) => BookingPage(
+                            clubId: club.id,
+                            pricePerHour: club.pricePerHour,
+                          ),
                         ),
                       );
 
@@ -165,7 +204,10 @@ class _EditClubDialogState extends State<EditClubDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.grey[900],
-      title: const Text('Редактировать клуб', style: TextStyle(color: Colors.white)),
+      title: const Text(
+        'Редактировать клуб',
+        style: TextStyle(color: Colors.white),
+      ),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -182,7 +224,10 @@ class _EditClubDialogState extends State<EditClubDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Отмена', style: TextStyle(color: Colors.grey)),
+          child: const Text(
+            'Отмена',
+            style: TextStyle(color: Colors.grey),
+          ),
         ),
         ElevatedButton(
           onPressed: () {
@@ -198,7 +243,7 @@ class _EditClubDialogState extends State<EditClubDialog> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFE2F163),
+            backgroundColor: const Color(0xFFE2F163),
             foregroundColor: Colors.black,
           ),
           child: const Text('Сохранить'),

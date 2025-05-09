@@ -1,11 +1,11 @@
-// components/bottom_bar.dart
-
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
 import '../pages/state_page.dart';
 import '../pages/search_page.dart';
 import '../pages/home_page.dart';
-import '../pages/shopping_cart_page.dart';
+import '../pages/cart_page.dart';
 import '../pages/profile_page.dart';
 
 class CustomGNavBar extends StatefulWidget {
@@ -27,6 +27,11 @@ class _CustomGNavBarState extends State<CustomGNavBar> {
   ];
 
   void _onTabChange(int index) {
+    final authService = context.read<AuthService>();
+    if (!authService.isLoggedIn && index != 2) {
+      Navigator.pushNamed(context, '/login');
+      return;
+    }
     setState(() {
       _selectedIndex = index;
     });
