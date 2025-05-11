@@ -24,6 +24,16 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
   }
 
   Future<void> _editClub(ComputerClub club) async {
+    // --- дополнительная клиентская защита ---
+    final authService = context.read<AuthService>();
+    if (!authService.isAdmin && !authService.isManager) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('У вас нет прав для редактирования клуба')),
+      );
+      return;
+    }
+    // ----------------------------------------
+
     final updatedClub = await showDialog<ComputerClub>(
       context: context,
       builder: (context) => EditClubDialog(club: club),
@@ -31,40 +41,22 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
 
     if (updatedClub != null) {
       try {
-        final authService = context.read<AuthService>();
         final token = await authService.getServerToken();
         if (token == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Ошибка аутентификации',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            const SnackBar(content: Text('Ошибка аутентификации')),
           );
           return;
         }
 
         await ApiService.updateClub(updatedClub, token);
-        setState(() {
-          _clubFuture = ApiService.getClub(widget.clubId);
-        });
+        setState(() => _clubFuture = ApiService.getClub(widget.clubId));
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Клуб успешно обновлен',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+          const SnackBar(content: Text('Клуб успешно обновлен')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Ошибка обновления клуба: $e',
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
+          SnackBar(content: Text('Ошибка обновления клуба: $e')),
         );
       }
     }
@@ -72,20 +64,31 @@ class _ClubDetailPageState extends State<ClubDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    // читаем роль
+    final authService = context.watch<AuthService>();
+    final canEdit = authService.isAdmin || authService.isManager;
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Color(0xFFE2F163)),
+        actionsIconTheme: const IconThemeData(color: Color(0xFFE2F163)),
         title: const Text(
           'Информация о клубе',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Color(0xFFE2F163),
+          ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              final club = await _clubFuture;
-              _editClub(club);
-            },
-          ),
+          if (canEdit)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () async {
+                final club = await _clubFuture;
+                if (!authService.isAdmin && !authService.isManager) return;
+                _editClub(club);
+              },
+            ),
         ],
       ),
       body: FutureBuilder<ComputerClub>(

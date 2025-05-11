@@ -28,18 +28,23 @@ class _ClubsPageState extends State<ClubsPage> {
       final clubs = await ApiService.getClubs();
       setState(() => _clubs = clubs);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка загрузки клубов: $e')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Ошибка: $e')));
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _addClub() async {
     final authService = context.read<AuthService>();
+    // Дополнительная клиентская защита
+    if (!authService.isAdmin && !authService.isManager) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('У вас нет прав для создания клуба')),
+      );
+      return;
+    }
+
     final token = await authService.getServerToken();
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -49,7 +54,7 @@ class _ClubsPageState extends State<ClubsPage> {
     }
 
     final club = ComputerClub(
-      id: '', // ID будет сгенерирован бэкендом
+      id: '',
       name: 'Новый клуб',
       address: 'Новый адрес',
       pricePerHour: 100,
@@ -71,29 +76,40 @@ class _ClubsPageState extends State<ClubsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Смотрим роль из провайдера
+    final authService = context.watch<AuthService>();
+    final canAdd = authService.isAdmin || authService.isManager;
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        // ставим зелёный для иконок и кнопок
+        iconTheme: const IconThemeData(color: Color(0xFFE2F163)),
+        actionsIconTheme: const IconThemeData(color: Color(0xFFE2F163)),
         title: const Text(
           'Компьютерные клубы',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _addClub,
+          style: TextStyle(
+            color: Color(0xFFE2F163),
           ),
+        ),
+        actions: [
+          if (canAdd)
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _addClub,
+            ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.white))
+          ? const Center(
+          child: CircularProgressIndicator(color: Colors.white))
           : ListView.builder(
         itemCount: _clubs.length,
         itemBuilder: (context, index) {
           final club = _clubs[index];
           return ListTile(
-            title: Text(club.name, style: const TextStyle(color: Colors.white)),
+            title: Text(club.name,
+                style: const TextStyle(color: Colors.white)),
             subtitle: Text(
               '${club.address} - ${club.pricePerHour} руб/час',
               style: const TextStyle(color: Colors.white70),
@@ -106,7 +122,8 @@ class _ClubsPageState extends State<ClubsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ClubDetailPage(clubId: club.id),
+                  builder: (_) =>
+                      ClubDetailPage(clubId: club.id),
                 ),
               );
             },
