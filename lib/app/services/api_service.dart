@@ -62,28 +62,35 @@ class ApiService {
   }
 
   // Создание клуба
-  static Future<String> createClub(ComputerClub club, String token) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/clubs'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(club.toJson()),
-      );
+  static Future<String> createClub(
+      ComputerClub club,
+      String token, {
+        String? managerId,
+      }) async {
+    final uri = Uri.parse('$baseUrl/manager/clubs');
+    final payload = club.toJson();
+    if (managerId != null) {
+      payload['manager_id'] = managerId;
+    }
 
-      if (response.statusCode == 201) {
-        final responseData = json.decode(response.body);
-        return responseData['id'] as String;
-      } else {
-        throw Exception(
-            'Failed to create club: ${response.statusCode} - ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error creating club: $e');
+    final response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(payload),
+    );
+
+    if (response.statusCode == 201) {
+      return json.decode(response.body)['id'] as String;
+    } else if (response.statusCode == 403) {
+      throw Exception('У вас нет прав для создания клуба (403)');
+    } else {
+      throw Exception('Failed to create club: ${response.statusCode} - ${response.body}');
     }
   }
+
 
   // Обновление клуба
   static Future<void> updateClub(ComputerClub club, String token) async {
@@ -257,18 +264,15 @@ class ApiService {
 
   // Отмена бронирования
   static Future<void> cancelBooking(String bookingId, String token) async {
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/bookings/$bookingId/cancel'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
+    final response = await http.put(
+      Uri.parse('$baseUrl/bookings/$bookingId/cancel'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Failed to cancel booking: ${response.statusCode} - ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error cancelling booking: $e');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Failed to cancel booking: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 }
