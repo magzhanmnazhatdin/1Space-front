@@ -4,6 +4,7 @@ import '../models/booking_model.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import 'club_detail_page.dart';
+import 'booking_users_page.dart';
 
 class ClubManagePage extends StatefulWidget {
   const ClubManagePage({Key? key}) : super(key: key);
@@ -179,6 +180,18 @@ class _ClubManagePageState extends State<ClubManagePage> {
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.white),
                   onPressed: () => _editClub(club),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.info, color: Colors.white),
+                  onPressed: () {
+                    if (!canManage) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BookingUsersPage(clubId: club.id),
+                      ),
+                    );
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.white),

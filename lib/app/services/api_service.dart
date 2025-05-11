@@ -301,4 +301,18 @@ class ApiService {
       throw Exception('Ошибка сохранения профиля: ${resp.statusCode}');
     }
   }
+
+  static Future<List<Profile>> getBookingUsers(String clubId, String token) async {
+    final resp = await http.get(
+      Uri.parse('$baseUrl/manager/clubs/$clubId/users'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (resp.statusCode == 200) {
+      final data = json.decode(resp.body) as Map<String, dynamic>;
+      final list = data['users'] as List<dynamic>;
+      return list.map((j) => Profile.fromJson(j as Map<String, dynamic>)).toList();
+    }
+    throw Exception('Не удалось получить список бронировавших');
+  }
+
 }
