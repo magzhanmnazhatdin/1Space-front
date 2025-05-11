@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/booking_model.dart';
+import '../models/profile_model.dart';
 
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:8080';
@@ -273,6 +274,31 @@ class ApiService {
       throw Exception(
         'Failed to cancel booking: ${response.statusCode} - ${response.body}',
       );
+    }
+  }
+
+  static Future<Profile> getProfile(String token) async {
+    final resp = await http.get(
+      Uri.parse('$baseUrl/profile'),
+      headers: {'Authorization':'Bearer $token'},
+    );
+    if (resp.statusCode==200) {
+      return Profile.fromJson(json.decode(resp.body));
+    }
+    throw Exception('Не удалось получить профиль');
+  }
+
+  static Future<void> updateProfile(Profile p, String token) async {
+    final resp = await http.put(
+      Uri.parse('$baseUrl/profile'),
+      headers: {
+        'Content-Type':'application/json',
+        'Authorization':'Bearer $token'
+      },
+      body: json.encode(p.toJson()),
+    );
+    if (resp.statusCode!=204) {
+      throw Exception('Ошибка сохранения профиля: ${resp.statusCode}');
     }
   }
 }

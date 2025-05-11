@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'app/components/bottom_bar.dart';
 import 'app/pages/login_page.dart';
 import 'app/pages/detailed_profile_page.dart';
+import 'app/pages/settings_page.dart';
 import 'app/services/auth_service.dart';
 import 'firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

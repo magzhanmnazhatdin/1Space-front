@@ -28,7 +28,7 @@ class ProfilePage extends StatelessWidget {
     final authService = context.watch<AuthService>();
     final isAdmin = authService.isAdmin;
     final isManager = authService.isManager;
-    final showRank = !isAdmin && !isManager;
+    final showOrdinary = !isAdmin && !isManager;
     final canManage = isAdmin || isManager;
 
     return SingleChildScrollView(
@@ -36,23 +36,98 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ... баннер и Week Stats ...
+          if (showOrdinary) ...[
+            // Banner
+            Container(
+              width: double.infinity,
+              height: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                image: const DecorationImage(
+                  image: AssetImage('lib/assets/images/computer_aesthetic_banner.jpeg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
 
-          const SizedBox(height: 16),
-          if (showRank) ...[
-            // ... блок ранга ...
+            const SizedBox(height: 16),
+
+            // Week Stats
+            const Text(
+              'Week Stats',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Row(
+              children: [
+                Text('Played Time:', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                SizedBox(width: 8),
+                Text('12h 34m', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+              ],
+            ),
+            const SizedBox(height: 4),
+            const Row(
+              children: [
+                Text('Visits:', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                SizedBox(width: 8),
+                Text('8', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+              ],
+            ),
+            const SizedBox(height: 4),
+            const Row(
+              children: [
+                Text('Misses:', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                SizedBox(width: 8),
+                Text('2', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Rank block
+            const Text(
+              'Rank',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: const LinearProgressIndicator(
+                value: 0.65,
+                minHeight: 10,
+                backgroundColor: Colors.grey,
+                color: Color(0xFFE2F163),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Level 3 - 65%',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white70,
+              ),
+            ),
             const SizedBox(height: 20),
           ],
 
-          // Details
+          const SizedBox(height: 20),
+
+          // Details button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (_) => const DetailedProfilePage()),
+                  MaterialPageRoute(builder: (_) => const DetailedProfilePage()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -84,11 +159,10 @@ class ProfilePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // Manage Clubs — видим только для менеджеров и админов
+          // Manage Clubs
           if (canManage)
             MyButton(
               onTap: () {
-                // дополнительная защита
                 if (!authService.isAdmin && !authService.isManager) return;
                 manageClubsPageOpen(context);
               },

@@ -166,4 +166,13 @@ class AuthService with ChangeNotifier {
       throw Exception('Failed to reset password: $e');
     }
   }
+
+  // auth_service.dart
+  Future<void> updatePhotoURL({required String url}) async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) throw Exception('No user');
+    await user.updatePhotoURL(url);
+    await user.reload();
+    notifyListeners();
+  }
 }
