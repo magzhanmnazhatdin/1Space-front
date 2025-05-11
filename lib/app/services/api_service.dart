@@ -257,18 +257,15 @@ class ApiService {
 
   // Отмена бронирования
   static Future<void> cancelBooking(String bookingId, String token) async {
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/bookings/$bookingId/cancel'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
+    final response = await http.put(
+      Uri.parse('$baseUrl/bookings/$bookingId/cancel'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Failed to cancel booking: ${response.statusCode} - ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error cancelling booking: $e');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Failed to cancel booking: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 }
