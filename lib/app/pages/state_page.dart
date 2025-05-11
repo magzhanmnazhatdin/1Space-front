@@ -16,7 +16,7 @@ class StatePage extends StatelessWidget {
               width: double.infinity,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/club_banner.jpg'),
+                  image: AssetImage('lib/assets/images/club_banner.webp'),
                   fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.only(
