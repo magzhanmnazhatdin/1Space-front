@@ -172,12 +172,31 @@ class _BookingPageState extends State<BookingPage> {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Text('Часов:'),
+                    const Text(
+                      'Часов:',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     const SizedBox(width: 10),
                     DropdownButton<int>(
                       value: _hours,
-                      items: [1,2,3,4,5,6].map((h) {
-                        return DropdownMenuItem(value: h, child: Text('$h'));
+                      iconEnabledColor: Colors.white,
+                      underline: Container(),
+                      // Чтобы элемент при показе всегда по-центру
+                      selectedItemBuilder: (BuildContext context) {
+                        return [1, 2, 3, 4, 5, 6].map<Widget>((h) {
+                          return Center(
+                            child: Text(
+                              '$h',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }).toList();
+                      },
+                      items: [1, 2, 3, 4, 5, 6].map((h) {
+                        return DropdownMenuItem<int>(
+                          value: h,
+                          child: Text('$h'),
+                        );
                       }).toList(),
                       onChanged: (v) {
                         if (v != null) setState(() => _hours = v);
@@ -185,6 +204,7 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 10),
                 Text(
                   'Стоимость: ${widget.pricePerHour * _hours} руб.',
