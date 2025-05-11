@@ -6,7 +6,8 @@ import '../models/profile_model.dart';
 
 class BookingUsersPage extends StatefulWidget {
   final String clubId;
-  const BookingUsersPage({required this.clubId, Key? key}) : super(key: key);
+  final String clubName;
+  const BookingUsersPage({required this.clubId, required this.clubName, Key? key}) : super(key: key);
 
   @override
   _BookingUsersPageState createState() => _BookingUsersPageState();
@@ -30,7 +31,7 @@ class _BookingUsersPageState extends State<BookingUsersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Booked By'),
+        title: Text(widget.clubName),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -41,7 +42,7 @@ class _BookingUsersPageState extends State<BookingUsersPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Error: \${snapshot.error}'));
           }
           final users = snapshot.data!;
           if (users.isEmpty) {

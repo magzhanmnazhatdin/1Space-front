@@ -188,7 +188,11 @@ class _ClubManagePageState extends State<ClubManagePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => BookingUsersPage(clubId: club.id),
+                        builder: (_) => BookingUsersPage(
+                          clubId: club.id,
+                          clubName: club.name,
+                        ),
+
                       ),
                     );
                   },
