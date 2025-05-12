@@ -26,7 +26,18 @@ class _ClubManagePageState extends State<ClubManagePage> {
   Future<void> _loadClubs() async {
     setState(() => _isLoading = true);
     try {
-      final clubs = await ApiService.getClubs();
+      final all = await ApiService.getClubs();
+      final authService = context.read<AuthService>();
+      List<ComputerClub> clubs;
+      if (authService.isAdmin) {
+        // админ видит все
+        clubs = all;
+      } else {
+        // менеджер видит только свои
+        final uid = authService.currentUser?.uid;
+        clubs = all.where((c) => c.managerId == uid).toList();
+      }
+
       setState(() => _clubs = clubs);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -36,6 +47,7 @@ class _ClubManagePageState extends State<ClubManagePage> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
 
   Future<void> _addClub() async {
     final authService = context.read<AuthService>();
@@ -173,6 +185,16 @@ class _ClubManagePageState extends State<ClubManagePage> {
               '${club.address} - ${club.pricePerHour} руб/час',
               style: const TextStyle(color: Colors.white70),
             ),
+            // Теперь при тапе на строку открываем компьютеры клуба
+            onTap: canManage
+                ? () {
+              Navigator.pushNamed(
+                context,
+                '/club-computers',
+                arguments: club,
+              );
+            }
+                : null,
             trailing: canManage
                 ? Row(
               mainAxisSize: MainAxisSize.min,
@@ -182,20 +204,16 @@ class _ClubManagePageState extends State<ClubManagePage> {
                   onPressed: () => _editClub(club),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.info, color: Colors.white),
-                  onPressed: () {
-                    if (!canManage) return;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BookingUsersPage(
-                          clubId: club.id,
-                          clubName: club.name,
-                        ),
-
+                  icon: const Icon(Icons.event_busy, color: Colors.white),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BookingUsersPage(
+                        clubId: club.id,
+                        clubName: club.name,
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.white),
@@ -205,6 +223,7 @@ class _ClubManagePageState extends State<ClubManagePage> {
             )
                 : null,
           );
+
         },
       ),
     );

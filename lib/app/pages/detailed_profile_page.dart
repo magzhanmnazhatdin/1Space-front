@@ -81,15 +81,15 @@ class DetailedProfilePage extends StatelessWidget {
 
           const Divider(color: Colors.white30),
 
-          if (showOrdinary)
-            ListTile(
-              leading: const Icon(Icons.favorite, color: Colors.white),
-              title: const Text(
-                'Favorites',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () => Navigator.pushNamed(context, '/favorites'),
-            ),
+          // if (showOrdinary)
+          //   ListTile(
+          //     leading: const Icon(Icons.favorite, color: Colors.white),
+          //     title: const Text(
+          //       'Favorites',
+          //       style: TextStyle(color: Colors.white),
+          //     ),
+          //     onTap: () => Navigator.pushNamed(context, '/favorites'),
+          //   ),
 
           ListTile(
             leading: const Icon(Icons.security, color: Colors.white),
@@ -112,12 +112,12 @@ class DetailedProfilePage extends StatelessWidget {
             ),
 
           ListTile(
-            leading: const Icon(Icons.help, color: Colors.white),
+            leading: const Icon(Icons.question_answer, color: Colors.white),
             title: const Text(
-              'Help',
+              'FAQ',
               style: TextStyle(color: Colors.white),
             ),
-            onTap: () => Navigator.pushNamed(context, '/help'),
+            onTap: () => Navigator.pushNamed(context, '/faq'),
           ),
 
           const Divider(color: Colors.white30),
@@ -143,46 +143,13 @@ class DetailedProfilePage extends StatelessWidget {
   }
 }
 
-class FavoritesPage extends StatelessWidget {
-  const FavoritesPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Favorites Page')),
-    );
-  }
-}
-
-class PrivacyPolicyPage extends StatelessWidget {
-  const PrivacyPolicyPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Privacy Policy Page')),
-    );
-  }
-}
-
-// class SettingsPage extends StatelessWidget {
-//   const SettingsPage({super.key});
+// class FavoritesPage extends StatelessWidget {
+//   const FavoritesPage({super.key});
 //
 //   @override
 //   Widget build(BuildContext context) {
 //     return const Scaffold(
-//       body: Center(child: Text('Settings Page')),
+//       body: Center(child: Text('Favorites Page')),
 //     );
 //   }
 // }
-
-class HelpPage extends StatelessWidget {
-  const HelpPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Help Page')),
-    );
-  }
-}

@@ -4,7 +4,7 @@ import '../models/booking_model.dart';
 import '../models/profile_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:8080';
+  static const String baseUrl = 'http://k8s-threetie-mainlb-11c5700e30-893303457.us-east-1.elb.amazonaws.com';
 
   static Future<String> createPaymentIntent({
     required int amount,   // in smallest currency unit, e.g. cents
@@ -95,41 +95,35 @@ class ApiService {
 
   // Обновление клуба
   static Future<void> updateClub(ComputerClub club, String token) async {
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/clubs/${club.id}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(club.toJson()),
-      );
+    final response = await http.put(
+      Uri.parse('$baseUrl/manager/clubs/${club.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(club.toJson()),
+    );
 
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Failed to update club: ${response.statusCode} - ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error updating club: $e');
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Failed to update club: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
+
   // Удаление клуба
   static Future<void> deleteClub(String id, String token) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/clubs/$id'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
+    final response = await http.delete(
+      Uri.parse('$baseUrl/manager/clubs/$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Failed to delete club: ${response.statusCode} - ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error deleting club: $e');
+    // разрешаем и 200, и 204
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception(
+        'Failed to delete club: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -192,7 +186,7 @@ class ApiService {
   static Future<void> createComputers(String clubId, List<Computer> computers, String token) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/clubs/$clubId/computers'),
+        Uri.parse('$baseUrl/manager/clubs/$clubId/computers'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -307,12 +301,23 @@ class ApiService {
       Uri.parse('$baseUrl/manager/clubs/$clubId/users'),
       headers: {'Authorization': 'Bearer $token'},
     );
-    if (resp.statusCode == 200) {
-      final data = json.decode(resp.body) as Map<String, dynamic>;
-      final list = data['users'] as List<dynamic>;
-      return list.map((j) => Profile.fromJson(j as Map<String, dynamic>)).toList();
+    if (resp.statusCode != 200) {
+      throw Exception('Не удалось получить список бронировавших: ${resp.statusCode}');
     }
-    throw Exception('Не удалось получить список бронировавших');
+
+    final Map<String, dynamic> data = json.decode(resp.body);
+    // безопасно достаём users как List<dynamic>?
+    final rawList = data['users'] as List<dynamic>?;
+
+    if (rawList == null || rawList.isEmpty) {
+      return [];
+    }
+
+    // теперь приводим каждый элемент к Profile
+    return rawList
+        .map((j) => Profile.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
+
 
 }

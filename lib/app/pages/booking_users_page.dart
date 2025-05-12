@@ -38,18 +38,41 @@ class _BookingUsersPageState extends State<BookingUsersPage> {
       body: FutureBuilder<List<Profile>>(
         future: _future,
         builder: (context, snapshot) {
+          // загрузка
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
+          // ошибка
           if (snapshot.hasError) {
-            return Center(child: Text('Error: \${snapshot.error}'));
-          }
-          final users = snapshot.data!;
-          if (users.isEmpty) {
-            return const Center(
-              child: Text('No bookings yet', style: TextStyle(color: Colors.white)),
+            return Center(
+              child: Text(
+                'Ошибка: ${snapshot.error}',
+                style: const TextStyle(color: Colors.redAccent),
+              ),
             );
           }
+          final users = snapshot.data;
+          // пустой список или null
+          if (users == null || users.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.event_busy, size: 64, color: Colors.white30),
+                  SizedBox(height: 16),
+                  Text(
+                    'Пока никто не бронировал',
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: 18,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          // список пользователей
           return ListView.builder(
             itemCount: users.length,
             itemBuilder: (context, index) {

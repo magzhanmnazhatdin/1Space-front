@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'app/components/bottom_bar.dart';
+import 'app/models/booking_model.dart';
+import 'app/pages/club_computers_page.dart';
+import 'app/pages/faq_page.dart';
+import 'app/pages/privacy_policy_page.dart';
 import 'app/pages/login_page.dart';
 import 'app/pages/detailed_profile_page.dart';
 import 'app/pages/settings_page.dart';
@@ -77,10 +81,14 @@ class OneSpaceApp extends StatelessWidget {
           routes: {
             '/login': (context) => const LoginPage(),
             '/home': (context) => const CustomGNavBar(),
-            '/favorites': (context) => const FavoritesPage(),
+            // '/favorites': (context) => const FavoritesPage(),
             '/privacy-policy': (context) => const PrivacyPolicyPage(),
             '/settings': (context) => const SettingsPage(),
-            '/help': (context) => const HelpPage(),
+            '/faq': (context) => const FAQPage(),
+            '/club-computers': (ctx){
+              final args = ModalRoute.of(ctx)!.settings.arguments as ComputerClub;
+              return ClubComputersPage(club: args);
+            },
           },
         );
       },

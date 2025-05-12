@@ -105,6 +105,7 @@ class ComputerClub {
   final String address;
   final double pricePerHour;
   final int availablePCs;
+  final String? managerId;
 
   ComputerClub({
     required this.id,
@@ -112,6 +113,7 @@ class ComputerClub {
     required this.address,
     required this.pricePerHour,
     required this.availablePCs,
+    this.managerId,
   });
 
   factory ComputerClub.fromJson(Map<String, dynamic> json) {
@@ -121,6 +123,9 @@ class ComputerClub {
       address: json['address'] as String? ?? '',
       pricePerHour: (json['price_per_hour'] as num?)?.toDouble() ?? 0.0,
       availablePCs: json['available_pcs'] as int? ?? 0,
+      managerId: json.containsKey('manager_id')
+          ? json['manager_id'] as String?
+          : null,
     );
   }
 
